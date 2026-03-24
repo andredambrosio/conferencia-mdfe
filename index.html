@@ -1,82 +1,240 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Conferência MDF-e</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #222;
+    }
+    .box {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    h1 { margin-top: 0; }
+    input, button {
+      margin: 8px 0 16px 0;
+      display: block;
+    }
+    button {
+      padding: 10px 18px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #1f6feb;
+      color: white;
+      font-weight: bold;
+    }
+    pre {
+      background: #111;
+      color: #eaeaea;
+      padding: 16px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .ok { color: #0a7a28; font-weight: bold; }
+    .erro { color: #b00020; font-weight: bold; }
+    .alerta { color: #9a6700; font-weight: bold; }
+  </style>
 </head>
+<body>
+  <div class="box">
+    <h1>Conferência MDF-e x Relatório</h1>
 
-<body style="font-family: Arial; padding:20px;">
+    <label><strong>XML do MDF-e</strong></label>
+    <input type="file" id="xmlFile" accept=".xml">
 
-<h2>Conferência MDF-e x Relatório</h2>
+    <label><strong>PDF do relatório</strong></label>
+    <input type="file" id="pdfFile" accept=".pdf">
 
-<p>XML do MDF-e:</p>
-<input type="file" id="xmlFile">
+    <button onclick="analisar()">CONFERIR</button>
 
-<p>PDF do relatório:</p>
-<input type="file" id="pdfFile">
+    <h3>Resultado</h3>
+    <pre id="resultado">Aguardando arquivos...</pre>
+  </div>
 
-<br><br> <button onclick="analisar()">CONFERIR</button>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js";
 
-<h3>Resultado:</h3>
-<pre id="resultado"></pre>
+    function normalizarEspacos(texto) {
+      return String(texto || "").replace(/\s+/g, " ").trim();
+    }
 
-<script>
-async function lerPDF(file){
-  const pdfjsLib = window['pdfjsLib'];
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js';
+    function parseNumeroBR(valor) {
+      if (!valor) return null;
+      const limpo = String(valor)
+        .replace(/\./g, "")
+        .replace(",", ".")
+        .replace(/[^\d.-]/g, "");
+      const num = Number(limpo);
+      return Number.isFinite(num) ? num : null;
+    }
 
-  const buffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data: buffer}).promise;
+    function formatarNumeroBR(num) {
+      if (num == null || Number.isNaN(num)) return "não encontrado";
+      return num.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
 
-  let texto = "";
+    function formatarQuantidadeBR(num) {
+      if (num == null || Number.isNaN(num)) return "não encontrado";
+      return num.toLocaleString("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 4
+      });
+    }
 
-  for(let i=1;i<=pdf.numPages;i++){
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    texto += content.items.map(item=>item.str).join(" ");
-  }
+    async function lerPDF(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-  return texto;
-}
+      let textoCompleto = "";
 
-function pegarNumero(texto, label){
-  const regex = new RegExp(label + ".*?(\\d+[.,]\\d+)", "i");
-  const match = texto.match(regex);
-  return match ? match[1] : "não encontrado";
-}
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const itens = content.items.map(item => item.str);
+        textoCompleto += "\n" + itens.join(" ");
+      }
 
-async function analisar(){
-  const xmlFile = document.getElementById('xmlFile').files[0];
-  const pdfFile = document.getElementById('pdfFile').files[0];
+      return normalizarEspacos(textoCompleto);
+    }
 
-  if(!xmlFile || !pdfFile){
-    alert("Anexa os dois arquivos");
-    return;
-  }
+    function extrairCampoNumerico(texto, rotulo) {
+      const textoLimpo = normalizarEspacos(texto);
 
-  const xmlText = await xmlFile.text();
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(xmlText, "text/xml");
+      const regex = new RegExp(
+        rotulo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+        "\\s*[.:]*\\s*([\\d.]+,\\d+|[\\d.]+)",
+        "i"
+      );
 
-  const vCarga = xml.getElementsByTagName("vCarga")[0]?.textContent;
+      const match = textoLimpo.match(regex);
+      return match ? parseNumeroBR(match[1]) : null;
+    }
 
-  const pdfText = await lerPDF(pdfFile);
+    function extrairPlaca(texto, rotulo) {
+      const regex = new RegExp(
+        rotulo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+        "\\s*[:]*\\s*([A-Z]{3}-?[0-9A-Z][0-9]{2,3})",
+        "i"
+      );
+      const match = texto.match(regex);
+      return match ? match[1].toUpperCase() : null;
+    }
 
-  const frete = pegarNumero(pdfText, "Valor do Frete");
-  const notas = pegarNumero(pdfText, "Valor Total das Notas");
+    function normalizarPlaca(placa) {
+      return String(placa || "").replace(/[^A-Z0-9]/gi, "").toUpperCase();
+    }
 
-  document.getElementById("resultado").innerText =
-    "Valor carga XML: " + vCarga + "\\n" +
-    "Frete relatório: " + frete + "\\n" +
-    "Total notas: " + notas + "\\n\\n" +
-    (vCarga == notas.replace(".", "").replace(",", ".")
-      ? "✅ CARGA CONFERE"
-      : "❌ DIVERGÊNCIA");
-}
-</script>
+    function extrairTag(xml, tag) {
+      const el = xml.getElementsByTagName(tag)[0];
+      return el ? el.textContent.trim() : null;
+    }
 
+    async function analisar() {
+      const resultado = document.getElementById("resultado");
+      resultado.textContent = "Analisando...";
+
+      try {
+        const xmlFile = document.getElementById("xmlFile").files[0];
+        const pdfFile = document.getElementById("pdfFile").files[0];
+
+        if (!xmlFile || !pdfFile) {
+          resultado.textContent = "Anexa os dois arquivos: XML e PDF.";
+          return;
+        }
+
+        const xmlText = await xmlFile.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlText, "text/xml");
+
+        const erroXml = xml.getElementsByTagName("parsererror")[0];
+        if (erroXml) {
+          resultado.textContent = "XML inválido.";
+          return;
+        }
+
+        const pdfText = await lerPDF(pdfFile);
+
+        const vCarga = parseFloat(extrairTag(xml, "vCarga"));
+        const qCarga = parseFloat(extrairTag(xml, "qCarga"));
+        const qCTe = parseInt(extrairTag(xml, "qCTe"), 10);
+        const placaTracaoXml = extrairTag(xml, "placa");
+        const placasXml = Array.from(xml.getElementsByTagName("placa")).map(x => x.textContent.trim());
+        const placaTracao = placasXml[0] || null;
+        const placaReboque = placasXml[1] || null;
+        const xNomeEmit = extrairTag(xml, "xNome");
+
+        const valorFreteRel = extrairCampoNumerico(pdfText, "Valor do Frete");
+        const valorNotasRel = extrairCampoNumerico(pdfText, "Valor Total das Notas");
+        const volumesRel = extrairCampoNumerico(pdfText, "Total de Volumes");
+        const quantidadeRel = extrairCampoNumerico(pdfText, "Quantidade Total");
+
+        const placaTracaoRel = extrairPlaca(pdfText, "Placa Veículo A");
+        const placaReboqueRel = extrairPlaca(pdfText, "Placa Carreta");
+
+        const diferencaCarga = (vCarga != null && valorNotasRel != null)
+          ? Math.abs(vCarga - valorNotasRel)
+          : null;
+
+        const cargaConfere = diferencaCarga != null && diferencaCarga < 0.01;
+        const placaTracaoConfere =
+          normalizarPlaca(placaTracao) &&
+          normalizarPlaca(placaTracao) === normalizarPlaca(placaTracaoRel);
+
+        const placaReboqueConfere =
+          normalizarPlaca(placaReboque) &&
+          normalizarPlaca(placaReboque) === normalizarPlaca(placaReboqueRel);
+
+        let texto = "";
+        texto += "===== DADOS DO XML =====\n";
+        texto += "Emitente: " + (xNomeEmit || "não encontrado") + "\n";
+        texto += "Valor da carga (vCarga): " + formatarNumeroBR(vCarga) + "\n";
+        texto += "Quantidade da carga (qCarga): " + formatarQuantidadeBR(qCarga) + "\n";
+        texto += "Quantidade de CT-e (qCTe): " + (Number.isFinite(qCTe) ? qCTe : "não encontrado") + "\n";
+        texto += "Placa tração XML: " + (placaTracao || "não encontrada") + "\n";
+        texto += "Placa reboque XML: " + (placaReboque || "não encontrada") + "\n\n";
+
+        texto += "===== DADOS DO RELATÓRIO =====\n";
+        texto += "Valor do frete: " + formatarNumeroBR(valorFreteRel) + "\n";
+        texto += "Valor total das notas: " + formatarNumeroBR(valorNotasRel) + "\n";
+        texto += "Total de volumes: " + formatarQuantidadeBR(volumesRel) + "\n";
+        texto += "Quantidade total: " + formatarQuantidadeBR(quantidadeRel) + "\n";
+        texto += "Placa tração relatório: " + (placaTracaoRel || "não encontrada") + "\n";
+        texto += "Placa carreta relatório: " + (placaReboqueRel || "não encontrada") + "\n\n";
+
+        texto += "===== CONFERÊNCIA =====\n";
+        texto += "Carga XML x Total Notas: " + (cargaConfere ? "OK" : "DIVERGENTE") + "\n";
+        if (diferencaCarga != null) {
+          texto += "Diferença: " + formatarNumeroBR(diferencaCarga) + "\n";
+        }
+
+        texto += "Placa tração: " + (placaTracaoConfere ? "OK" : "DIVERGENTE") + "\n";
+        texto += "Placa reboque: " + (placaReboqueConfere ? "OK" : "DIVERGENTE") + "\n";
+
+        texto += "\n===== APOIO =====\n";
+        texto += "Trecho lido do PDF:\n";
+        texto += pdfText.slice(0, 1200);
+
+        resultado.textContent = texto;
+      } catch (e) {
+        resultado.textContent = "Erro ao analisar: " + e.message;
+      }
+    }
+  </script>
 </body>
 </html>
