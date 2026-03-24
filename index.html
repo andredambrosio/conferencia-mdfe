@@ -7,32 +7,31 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
   <style>
     :root{
-      --card: rgba(255,255,255,.10);
-      --card2: rgba(255,255,255,.06);
-      --line: rgba(255,255,255,.14);
-      --text: #f4f7fb;
-      --muted: #c8d1db;
-      --gold: #d3b15c;
-      --ok: #1fc16b;
-      --warn: #f0b64a;
-      --bad: #ff6b6b;
-      --shadow: 0 18px 60px rgba(0,0,0,.28);
-      --radius: 28px;
+      --text:#f4f7fb;
+      --muted:#c8d1db;
+      --gold:#d3b15c;
+      --ok:#1fc16b;
+      --warn:#f0b64a;
+      --bad:#ff6b6b;
+      --card:rgba(255,255,255,.10);
+      --line:rgba(255,255,255,.14);
+      --shadow:0 18px 60px rgba(0,0,0,.28);
+      --radius:26px;
     }
 
-    *{ box-sizing:border-box; }
-    html, body { margin:0; padding:0; }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
     body{
       min-height:100vh;
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
       color:var(--text);
       background:
-        linear-gradient(rgba(8,12,16,.76), rgba(8,12,16,.86)),
+        linear-gradient(rgba(8,12,16,.78), rgba(8,12,16,.88)),
         url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat fixed;
     }
 
     .wrap{
-      max-width:1320px;
+      max-width:1240px;
       margin:0 auto;
       padding:22px 16px 40px;
     }
@@ -41,8 +40,8 @@
       background:var(--card);
       border:1px solid var(--line);
       border-radius:var(--radius);
-      backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
       box-shadow:var(--shadow);
     }
 
@@ -55,7 +54,7 @@
 
     .hero-main{
       padding:26px;
-      min-height:245px;
+      min-height:230px;
       display:flex;
       flex-direction:column;
       justify-content:center;
@@ -71,11 +70,12 @@
       font-size:12px;
       letter-spacing:.08em;
       text-transform:uppercase;
+      font-weight:800;
     }
 
     h1{
       margin:16px 0 10px;
-      font-size:clamp(30px,4vw,56px);
+      font-size:clamp(30px,4vw,54px);
       line-height:.98;
       letter-spacing:-.03em;
     }
@@ -84,11 +84,11 @@
       color:var(--muted);
       font-size:15px;
       line-height:1.6;
-      max-width:780px;
+      max-width:760px;
     }
 
     .logo-box{
-      min-height:245px;
+      min-height:230px;
       padding:22px;
       display:grid;
       place-items:center;
@@ -104,7 +104,6 @@
       display:grid;
       place-items:center;
       overflow:hidden;
-      box-shadow:0 14px 40px rgba(0,0,0,.18);
     }
 
     .logo-shell img{
@@ -117,37 +116,9 @@
     .brand-name{
       margin-top:16px;
       font-size:30px;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:-.03em;
     }
-
-    .tabs{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:18px;
-    }
-
-    .tab-btn{
-      appearance:none;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
-      border-radius:999px;
-      padding:12px 16px;
-      font-weight:800;
-      cursor:pointer;
-      transition:.18s ease;
-    }
-
-    .tab-btn.active{
-      background:linear-gradient(180deg,#e0c274,#c9a24a);
-      color:#1f1708;
-      border-color:transparent;
-    }
-
-    .tab-panel{ display:none; }
-    .tab-panel.active{ display:block; }
 
     .grid{
       display:grid;
@@ -155,12 +126,16 @@
       gap:18px;
     }
 
-    .panel{ padding:22px; }
+    .panel{
+      padding:22px;
+    }
+
     .panel h2{
       margin:0 0 8px;
       font-size:22px;
       letter-spacing:-.02em;
     }
+
     .panel p{
       color:var(--muted);
       line-height:1.6;
@@ -169,91 +144,68 @@
     .upload-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:14px;
-      margin-top:16px;
+      gap:16px;
+      margin-top:18px;
     }
 
-    .upload-card{
-      position:relative;
-      min-height:240px;
-      padding:18px;
+    .dropbox{
+      border:2px dashed rgba(255,255,255,.20);
       border-radius:24px;
       background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.12);
-      transition:.18s ease;
-      cursor:pointer;
+      padding:22px;
+      min-height:250px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
-      overflow:hidden;
+      transition:.18s ease;
     }
 
-    .upload-card:hover{
-      transform:translateY(-1px);
-      border-color:rgba(211,177,92,.42);
+    .dropbox.drag{
+      border-color:rgba(211,177,92,.85);
+      background:rgba(211,177,92,.10);
     }
 
-    .upload-card.drag{
-      border-color:rgba(211,177,92,.82);
-      background:rgba(211,177,92,.12);
-      box-shadow:0 0 0 1px rgba(211,177,92,.22) inset;
-    }
-
-    .upload-top{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .upload-badge{
-      display:inline-flex;
-      width:fit-content;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
-      color:var(--muted);
-      font-size:11px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      font-weight:800;
-    }
-
-    .upload-title{
-      font-size:22px;
+    .drop-title{
+      font-size:24px;
       font-weight:900;
       letter-spacing:-.03em;
+      margin-bottom:8px;
     }
 
-    .upload-desc{
+    .drop-sub{
       color:var(--muted);
       font-size:14px;
       line-height:1.6;
-      max-width:95%;
     }
 
-    .upload-bottom{
+    .drop-actions{
+      margin-top:18px;
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:10px;
     }
 
-    .big-select{
+    .select-btn, button{
       appearance:none;
       border:0;
-      border-radius:18px;
+      border-radius:16px;
       padding:16px 18px;
       font-weight:900;
       font-size:14px;
-      background:linear-gradient(180deg,#e0c274,#c9a24a);
-      color:#1f1708;
       cursor:pointer;
-      width:100%;
-      text-align:center;
     }
 
-    .drop-hint{
-      font-size:13px;
+    .select-btn{
+      background:linear-gradient(180deg,#e0c274,#c9a24a);
+      color:#1f1708;
+      text-align:center;
+      display:block;
+      text-decoration:none;
+    }
+
+    .hint{
       color:var(--muted);
+      font-size:13px;
     }
 
     .file-name{
@@ -263,27 +215,16 @@
       min-height:18px;
     }
 
-    input[type=file]{ display:none; }
+    input[type="file"]{
+      display:none;
+    }
 
     .actions{
       display:flex;
-      flex-wrap:wrap;
       gap:12px;
+      flex-wrap:wrap;
       margin-top:18px;
     }
-
-    button{
-      appearance:none;
-      border:0;
-      border-radius:999px;
-      padding:14px 18px;
-      font-weight:800;
-      cursor:pointer;
-      transition:.18s ease;
-      font-size:14px;
-    }
-
-    button:hover{ transform:translateY(-1px); }
 
     .primary{
       background:linear-gradient(180deg,#e0c274,#c9a24a);
@@ -306,7 +247,7 @@
     .stat{
       padding:18px;
       border-radius:22px;
-      background:var(--card2);
+      background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.10);
     }
 
@@ -322,12 +263,6 @@
       font-size:30px;
       font-weight:900;
       letter-spacing:-.04em;
-    }
-
-    .result-grid{
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:18px;
     }
 
     .list{
@@ -346,8 +281,8 @@
     .check-top{
       display:flex;
       justify-content:space-between;
-      align-items:flex-start;
       gap:12px;
+      align-items:flex-start;
     }
 
     .check h3{
@@ -426,32 +361,34 @@
       padding:14px 0;
       border-top:1px solid rgba(255,255,255,.08);
     }
+
     .error-item:first-child{
       border-top:0;
       padding-top:0;
     }
 
-    .rule-card{
-      padding:18px;
-      border-radius:22px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-      margin-top:12px;
-    }
-
-    .muted{ color:var(--muted); }
-    .small{ font-size:13px; }
-    .strong{ font-weight:800; }
+    .muted{color:var(--muted)}
+    .small{font-size:13px}
 
     @media (max-width:1024px){
-      .hero, .grid, .result-grid{ grid-template-columns:1fr; }
-      .stats{ grid-template-columns:repeat(2,1fr); }
+      .hero, .grid{
+        grid-template-columns:1fr;
+      }
+      .stats{
+        grid-template-columns:repeat(2,1fr);
+      }
     }
 
     @media (max-width:640px){
-      .upload-grid, .pair, .stats{ grid-template-columns:1fr; }
-      .wrap{ padding:14px 12px 34px; }
-      .hero-main, .logo-box, .panel{ padding:18px; }
+      .upload-grid, .pair, .stats{
+        grid-template-columns:1fr;
+      }
+      .wrap{
+        padding:14px 12px 34px;
+      }
+      .hero-main, .logo-box, .panel{
+        padding:18px;
+      }
     }
   </style>
 </head>
@@ -462,8 +399,8 @@
         <div class="eyebrow">Conferência automática · MDF-e + Relatório</div>
         <h1>Validação rápida, visual limpa e erro apontado no lugar certo.</h1>
         <div class="subtitle">
-          Arrasta o XML do MDF-e e o PDF do relatório. O sistema compara dados principais,
-          identifica indícios de lotação ou fracionado e mostra exatamente o que revisar antes de liberar a carga.
+          Escolhe ou arrasta o XML do MDF-e e o PDF do relatório. O sistema cruza os dados principais
+          e mostra o que revisar antes de liberar a carga.
         </div>
       </div>
 
@@ -477,162 +414,81 @@
       </div>
     </section>
 
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="arquivos">Arquivos</button>
-      <button class="tab-btn" data-tab="resultado">Resultado</button>
-      <button class="tab-btn" data-tab="regras">Regras</button>
+    <div class="grid">
+      <div class="panel glass">
+        <h2>Arquivos</h2>
+        <p>Os arquivos são lidos só no navegador. Nada é salvo.</p>
+
+        <div class="upload-grid">
+          <div id="xmlBox" class="dropbox">
+            <div>
+              <div class="drop-title">XML do MDF-e</div>
+              <div class="drop-sub">Clica no botão abaixo ou arrasta aqui o arquivo XML do MDF-e.</div>
+            </div>
+
+            <div class="drop-actions">
+              <label for="xmlInput" class="select-btn">Selecionar XML do MDF-e</label>
+              <div class="hint">Também aceita arrastar e soltar.</div>
+              <div id="xmlName" class="file-name">Nenhum arquivo selecionado</div>
+            </div>
+
+            <input id="xmlInput" type="file" accept=".xml,text/xml">
+          </div>
+
+          <div id="pdfBox" class="dropbox">
+            <div>
+              <div class="drop-title">PDF do relatório</div>
+              <div class="drop-sub">Clica no botão abaixo ou arrasta aqui o arquivo PDF do relatório.</div>
+            </div>
+
+            <div class="drop-actions">
+              <label for="pdfInput" class="select-btn">Selecionar PDF do relatório</label>
+              <div class="hint">Também aceita arrastar e soltar.</div>
+              <div id="pdfName" class="file-name">Nenhum arquivo selecionado</div>
+            </div>
+
+            <input id="pdfInput" type="file" accept="application/pdf,.pdf">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="analisarBtn" class="primary">Analisar operação</button>
+          <button id="limparBtn" class="ghost">Limpar</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Status geral</div>
+            <div id="statusGeral" class="stat-value">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Checks OK</div>
+            <div id="okCount" class="stat-value">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Alertas</div>
+            <div id="warnCount" class="stat-value">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Erros</div>
+            <div id="badCount" class="stat-value">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel glass">
+        <h2>Resultado</h2>
+        <div id="checks" class="list"></div>
+
+        <h2 style="margin-top:22px;">Erros e ajustes</h2>
+        <div id="errorsArea" class="error-box">
+          <div class="muted">Ainda não há análise.</div>
+        </div>
+
+        <h2 style="margin-top:22px;">Resumo técnico</h2>
+        <div id="summary" class="list"></div>
+      </div>
     </div>
-
-    <section id="tab-arquivos" class="tab-panel active">
-      <div class="grid">
-        <div class="panel glass">
-          <h2>Arquivos</h2>
-          <p>Os arquivos são lidos só no navegador. Nada é salvo.</p>
-
-          <div class="upload-grid">
-            <div id="xmlCard" class="upload-card">
-              <div class="upload-top">
-                <div class="upload-badge">Documento principal</div>
-                <div class="upload-title">XML do MDF-e</div>
-                <div class="upload-desc">
-                  Clica nesta caixa ou arrasta o arquivo XML do MDF-e para dentro dela.
-                </div>
-              </div>
-
-              <div class="upload-bottom">
-                <button type="button" class="big-select" id="xmlBtn">Selecionar XML do MDF-e</button>
-                <div class="drop-hint">Também aceita arrastar e soltar.</div>
-                <div id="xmlName" class="file-name">Nenhum arquivo selecionado</div>
-              </div>
-
-              <input id="xmlInput" type="file" accept=".xml,text/xml">
-            </div>
-
-            <div id="pdfCard" class="upload-card">
-              <div class="upload-top">
-                <div class="upload-badge">Relatório operacional</div>
-                <div class="upload-title">PDF do relatório</div>
-                <div class="upload-desc">
-                  Clica nesta caixa ou arrasta o arquivo PDF do relatório para dentro dela.
-                </div>
-              </div>
-
-              <div class="upload-bottom">
-                <button type="button" class="big-select" id="pdfBtn">Selecionar PDF do relatório</button>
-                <div class="drop-hint">Também aceita arrastar e soltar.</div>
-                <div id="pdfName" class="file-name">Nenhum arquivo selecionado</div>
-              </div>
-
-              <input id="pdfInput" type="file" accept="application/pdf,.pdf">
-            </div>
-          </div>
-
-          <div class="actions">
-            <button id="analisarBtn" class="primary">Analisar operação</button>
-            <button id="limparBtn" class="ghost">Limpar</button>
-          </div>
-
-          <div class="stats">
-            <div class="stat">
-              <div class="stat-label">Status geral</div>
-              <div id="statusGeral" class="stat-value">—</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Checks OK</div>
-              <div id="okCount" class="stat-value">0</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Alertas</div>
-              <div id="warnCount" class="stat-value">0</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Erros</div>
-              <div id="badCount" class="stat-value">0</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel glass">
-          <h2>Leitura aplicada</h2>
-          <p>
-            A análise cruza o MDF-e com o relatório operacional e devolve erro, alerta e ajuste sugerido.
-          </p>
-          <div class="list small muted">
-            <div>1. Autorização do MDF-e</div>
-            <div>2. Emitente / transportador</div>
-            <div>3. Placas</div>
-            <div>4. Valor da carga x valor total das notas</div>
-            <div>5. Quantidade de CT-e x itens do relatório</div>
-            <div>6. Municípios de descarga</div>
-            <div>7. Grupo de pagamento</div>
-            <div>8. CIOT encontrado ou não</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-resultado" class="tab-panel">
-      <div class="result-grid">
-        <div class="panel glass">
-          <h2>Resultado da revisão</h2>
-          <div id="checks" class="list"></div>
-        </div>
-
-        <div class="panel glass">
-          <h2>Erros e ajustes</h2>
-          <div id="errorsArea" class="error-box">
-            <div class="muted">Ainda não há análise.</div>
-          </div>
-
-          <h2 style="margin-top:22px;">Resumo técnico</h2>
-          <div id="summary" class="list"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-regras" class="tab-panel">
-      <div class="grid">
-        <div class="panel glass">
-          <h2>Regras internas da conferência</h2>
-
-          <div class="rule-card">
-            <div class="strong">Classificação provável da operação</div>
-            <div class="muted small" style="margin-top:8px;">
-              Se houver múltiplos CT-e, múltiplos municípios de descarga ou múltiplas linhas no relatório,
-              a operação tende a ser tratada como fracionada.
-            </div>
-          </div>
-
-          <div class="rule-card">
-            <div class="strong">Grupo de pagamento</div>
-            <div class="muted small" style="margin-top:8px;">
-              Se a operação aparentar lotação e o grupo de pagamento não estiver presente, o sistema marca erro.
-              Se aparentar fracionada, marca alerta para revisão interna.
-            </div>
-          </div>
-
-          <div class="rule-card">
-            <div class="strong">CIOT</div>
-            <div class="muted small" style="margin-top:8px;">
-              O sistema informa se encontrou ou não CIOT no XML. A necessidade efetiva depende do tipo de contratação e da operação.
-            </div>
-          </div>
-        </div>
-
-        <div class="panel glass">
-          <h2>Observações</h2>
-          <div class="rule-card">
-            <div class="muted small">
-              Esta versão é a base operacional do conferente. A próxima camada ideal é incluir um parecer final:
-              <br><br>
-              <span class="strong">OK para liberar</span><br>
-              <span class="strong">Liberar com alerta</span><br>
-              <span class="strong">Não liberar até corrigir</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
   </div>
 
   <script>
@@ -715,12 +571,7 @@
         status: getTagText(doc, 'cStat'),
         motivo: getTagText(doc, 'xMotivo'),
         emitente: getTagText(doc, 'xNome'),
-        fantasia: getTagText(doc, 'xFant'),
-        ufIni: getTagText(doc, 'UFIni'),
-        ufFim: getTagText(doc, 'UFFim'),
-        data: getTagText(doc, 'dhEmi'),
         vCarga: Number(getTagText(doc, 'vCarga') || 0),
-        qCarga: Number(getTagText(doc, 'qCarga') || 0),
         qCTe: Number(getTagText(doc, 'qCTe') || 0),
         placaTracao: plates[0] || '',
         placaReboque: plates[1] || '',
@@ -850,19 +701,6 @@
         'Conferir se todas as linhas do relatório estão presentes e se o XML é o manifesto correto.'
       );
 
-      const municipiosMdfe = [...new Set(mdfe.municipios.map((m) => normalizeText(m.municipio)))];
-      const municipiosRel = relatorio.municipios;
-      const municipiosOk = municipiosMdfe.every((m) => municipiosRel.includes(m));
-      addCheck(
-        checks,
-        municipiosOk ? 'ok' : 'warn',
-        'Municípios de descarga',
-        municipiosOk ? 'Municípios coerentes entre XML e relatório.' : 'Há município do MDF-e que não apareceu claramente no relatório.',
-        municipiosMdfe.join(', ') || 'não encontrado',
-        municipiosRel.join(', ') || 'não encontrado',
-        'Revisar municípios vinculados no MDF-e e no relatório.'
-      );
-
       const operacao = inferirTipoOperacao(mdfe, relatorio);
       addCheck(
         checks,
@@ -875,38 +713,6 @@
           ? 'Se lotação, revisar grupo de pagamento e aderência à regra aplicável.'
           : 'Se fracionada, manter coerência documental.'
       );
-
-      if (operacao.tipo === 'Provável lotação' && !mdfe.temInfPag) {
-        addCheck(
-          checks,
-          'bad',
-          'Grupo de pagamento no MDF-e',
-          'Operação com indício de lotação sem infPag no XML.',
-          'Ausente',
-          'Esperado',
-          'No sistema emissor do MDF-e, preencher o grupo de pagamento antes da autorização, quando aplicável.'
-        );
-      } else if (!mdfe.temInfPag) {
-        addCheck(
-          checks,
-          'warn',
-          'Grupo de pagamento no MDF-e',
-          'infPag não encontrado. Em operação fracionada isso pode exigir apenas revisão interna.',
-          'Ausente',
-          'Avaliar caso',
-          'Definir regra interna de revisão para ausência de infPag.'
-        );
-      } else {
-        addCheck(
-          checks,
-          'ok',
-          'Grupo de pagamento no MDF-e',
-          'Campo de pagamento presente.',
-          'Presente',
-          'Presente',
-          'Nenhum ajuste.'
-        );
-      }
 
       addCheck(
         checks,
@@ -1004,15 +810,6 @@
       `).join('');
     }
 
-    function switchTab(name){
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === name);
-      });
-      document.querySelectorAll('.tab-panel').forEach(panel => {
-        panel.classList.toggle('active', panel.id === `tab-${name}`);
-      });
-    }
-
     async function runAnalysis(){
       if (!state.xmlFile || !state.pdfFile){
         alert('Seleciona os dois arquivos: XML do MDF-e e PDF do relatório.');
@@ -1029,17 +826,13 @@
         state.relatorio = parseRelatorio(pdfText);
 
         const checks = buildChecks(state.mdfe, state.relatorio);
-
         renderChecks(checks);
         renderErrors(checks);
         renderSummary(state.mdfe, state.relatorio, checks);
-
-        switchTab('resultado');
       } catch(err){
         $('checks').innerHTML = '';
         $('summary').innerHTML = '';
         $('errorsArea').innerHTML = `<strong>Erro na análise.</strong><div class="muted small" style="margin-top:8px;">${err.message}</div>`;
-        switchTab('resultado');
       } finally {
         $('analisarBtn').textContent = 'Analisar operação';
       }
@@ -1061,75 +854,66 @@
       $('okCount').textContent = '0';
       $('warnCount').textContent = '0';
       $('badCount').textContent = '0';
-      switchTab('arquivos');
     }
 
-    function activateUploadCard(cardId, inputId, kind){
-      const card = $(cardId);
+    function setupDrop(boxId, inputId, expectedExt, kind){
+      const box = $(boxId);
       const input = $(inputId);
 
-      card.addEventListener('click', (e) => {
-        if (e.target.tagName.toLowerCase() === 'button') return;
-        input.click();
-      });
-
       ['dragenter','dragover'].forEach(evt => {
-        card.addEventListener(evt, (e) => {
+        box.addEventListener(evt, (e) => {
           e.preventDefault();
           e.stopPropagation();
-          card.classList.add('drag');
+          box.classList.add('drag');
         });
       });
 
       ['dragleave','drop'].forEach(evt => {
-        card.addEventListener(evt, (e) => {
+        box.addEventListener(evt, (e) => {
           e.preventDefault();
           e.stopPropagation();
-          card.classList.remove('drag');
+          box.classList.remove('drag');
         });
       });
 
-      card.addEventListener('drop', (e) => {
-        const files = Array.from(e.dataTransfer.files || []);
-        const file = files[0];
+      box.addEventListener('drop', (e) => {
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
         if (!file) return;
 
         const lower = file.name.toLowerCase();
+        if (!lower.endsWith(expectedExt)) {
+          alert(kind === 'xml' ? 'Solta aqui apenas arquivo XML.' : 'Solta aqui apenas arquivo PDF.');
+          return;
+        }
 
-        if (kind === 'xml' && lower.endsWith('.xml')) {
+        if (kind === 'xml') {
           state.xmlFile = file;
           setFileName('xml', file.name);
-        } else if (kind === 'pdf' && lower.endsWith('.pdf')) {
+        } else {
           state.pdfFile = file;
           setFileName('pdf', file.name);
+        }
+      });
+
+      input.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (kind === 'xml') {
+          state.xmlFile = file;
+          setFileName('xml', file.name);
         } else {
-          alert(kind === 'xml' ? 'Solta aqui apenas arquivo XML.' : 'Solta aqui apenas arquivo PDF.');
+          state.pdfFile = file;
+          setFileName('pdf', file.name);
         }
       });
     }
 
-    $('xmlBtn').addEventListener('click', () => $('xmlInput').click());
-    $('pdfBtn').addEventListener('click', () => $('pdfInput').click());
-
-    $('xmlInput').addEventListener('change', (e) => {
-      state.xmlFile = e.target.files?.[0] || null;
-      setFileName('xml', state.xmlFile?.name);
-    });
-
-    $('pdfInput').addEventListener('change', (e) => {
-      state.pdfFile = e.target.files?.[0] || null;
-      setFileName('pdf', state.pdfFile?.name);
-    });
-
     $('analisarBtn').addEventListener('click', runAnalysis);
     $('limparBtn').addEventListener('click', resetAll);
 
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-    });
-
-    activateUploadCard('xmlCard', 'xmlInput', 'xml');
-    activateUploadCard('pdfCard', 'pdfInput', 'pdf');
+    setupDrop('xmlBox', 'xmlInput', '.xml', 'xml');
+    setupDrop('pdfBox', 'pdfInput', '.pdf', 'pdf');
 
     document.addEventListener('dragover', (e) => e.preventDefault());
     document.addEventListener('drop', (e) => e.preventDefault());
