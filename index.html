@@ -7,36 +7,34 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
   <style>
     :root{
-      --bg:#0b1117;
-      --card:rgba(255,255,255,.10);
-      --card2:rgba(255,255,255,.06);
-      --line:rgba(255,255,255,.12);
-      --text:#f3f6fa;
-      --muted:#c7d0db;
-      --green:#0a9552;
-      --gold:#d3b15c;
-      --ok:#1fc16b;
-      --warn:#f0b64a;
-      --bad:#ff6b6b;
-      --shadow:0 18px 60px rgba(0,0,0,.28);
-      --radius:28px;
+      --card: rgba(255,255,255,.10);
+      --card2: rgba(255,255,255,.06);
+      --line: rgba(255,255,255,.14);
+      --text: #f4f7fb;
+      --muted: #c8d1db;
+      --gold: #d3b15c;
+      --ok: #1fc16b;
+      --warn: #f0b64a;
+      --bad: #ff6b6b;
+      --shadow: 0 18px 60px rgba(0,0,0,.28);
+      --radius: 28px;
     }
 
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
+    *{ box-sizing:border-box; }
+    html, body { margin:0; padding:0; }
     body{
       min-height:100vh;
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
       color:var(--text);
       background:
-        linear-gradient(rgba(8,12,16,.74), rgba(8,12,16,.84)),
+        linear-gradient(rgba(8,12,16,.76), rgba(8,12,16,.86)),
         url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat fixed;
     }
 
     .wrap{
       max-width:1320px;
       margin:0 auto;
-      padding:22px 16px 46px;
+      padding:22px 16px 40px;
     }
 
     .glass{
@@ -50,7 +48,7 @@
 
     .hero{
       display:grid;
-      grid-template-columns:1.18fr .82fr;
+      grid-template-columns:1.15fr .85fr;
       gap:18px;
       margin-bottom:18px;
     }
@@ -78,7 +76,7 @@
     h1{
       margin:16px 0 10px;
       font-size:clamp(30px,4vw,56px);
-      line-height:.97;
+      line-height:.98;
       letter-spacing:-.03em;
     }
 
@@ -98,8 +96,8 @@
     }
 
     .logo-shell{
-      width:168px;
-      height:168px;
+      width:170px;
+      height:170px;
       border-radius:36px;
       background:rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.14);
@@ -148,13 +146,8 @@
       border-color:transparent;
     }
 
-    .tab-panel{
-      display:none;
-    }
-
-    .tab-panel.active{
-      display:block;
-    }
+    .tab-panel{ display:none; }
+    .tab-panel.active{ display:block; }
 
     .grid{
       display:grid;
@@ -162,67 +155,124 @@
       gap:18px;
     }
 
-    .panel{
-      padding:22px;
-    }
-
+    .panel{ padding:22px; }
     .panel h2{
       margin:0 0 8px;
       font-size:22px;
       letter-spacing:-.02em;
     }
-
     .panel p{
       color:var(--muted);
       line-height:1.6;
     }
 
-    .dropzone{
-      margin-top:14px;
-      border:1.5px dashed rgba(255,255,255,.22);
-      border-radius:26px;
-      padding:16px;
-      background:rgba(255,255,255,.05);
-      transition:.2s ease;
-    }
-
-    .dropzone.drag{
-      border-color:rgba(211,177,92,.72);
-      background:rgba(211,177,92,.10);
-      transform:translateY(-1px);
-    }
-
-    .drop-row{
+    .upload-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:14px;
+      margin-top:16px;
     }
 
-    .drop-card{
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:22px;
+    .upload-card{
+      position:relative;
+      min-height:240px;
       padding:18px;
+      border-radius:24px;
       background:rgba(255,255,255,.05);
-      min-height:190px;
+      border:1px solid rgba(255,255,255,.12);
+      transition:.18s ease;
+      cursor:pointer;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
+      overflow:hidden;
     }
 
-    .drop-title{
-      font-weight:800;
-      margin-bottom:6px;
-      font-size:16px;
+    .upload-card:hover{
+      transform:translateY(-1px);
+      border-color:rgba(211,177,92,.42);
     }
 
-    .drop-meta{
+    .upload-card.drag{
+      border-color:rgba(211,177,92,.82);
+      background:rgba(211,177,92,.12);
+      box-shadow:0 0 0 1px rgba(211,177,92,.22) inset;
+    }
+
+    .upload-top{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .upload-badge{
+      display:inline-flex;
+      width:fit-content;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
       color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-      min-height:66px;
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-weight:800;
     }
 
-    .file-btn, button{
+    .upload-title{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:-.03em;
+    }
+
+    .upload-desc{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      max-width:95%;
+    }
+
+    .upload-bottom{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .big-select{
+      appearance:none;
+      border:0;
+      border-radius:18px;
+      padding:16px 18px;
+      font-weight:900;
+      font-size:14px;
+      background:linear-gradient(180deg,#e0c274,#c9a24a);
+      color:#1f1708;
+      cursor:pointer;
+      width:100%;
+      text-align:center;
+    }
+
+    .drop-hint{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .file-name{
+      color:var(--gold);
+      font-size:13px;
+      word-break:break-word;
+      min-height:18px;
+    }
+
+    input[type=file]{ display:none; }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:18px;
+    }
+
+    button{
       appearance:none;
       border:0;
       border-radius:999px;
@@ -233,9 +283,7 @@
       font-size:14px;
     }
 
-    button:hover, .file-btn:hover{
-      transform:translateY(-1px);
-    }
+    button:hover{ transform:translateY(-1px); }
 
     .primary{
       background:linear-gradient(180deg,#e0c274,#c9a24a);
@@ -246,27 +294,6 @@
       background:rgba(255,255,255,.08);
       color:var(--text);
       border:1px solid rgba(255,255,255,.12);
-      display:inline-block;
-      text-decoration:none;
-      margin-top:14px;
-    }
-
-    .file-name{
-      margin-top:12px;
-      color:var(--gold);
-      font-size:13px;
-      word-break:break-word;
-    }
-
-    input[type=file]{
-      display:none;
-    }
-
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:12px;
-      margin-top:16px;
     }
 
     .stats{
@@ -301,7 +328,6 @@
       display:grid;
       grid-template-columns:1.1fr .9fr;
       gap:18px;
-      margin-top:0;
     }
 
     .list{
@@ -400,7 +426,6 @@
       padding:14px 0;
       border-top:1px solid rgba(255,255,255,.08);
     }
-
     .error-item:first-child{
       border-top:0;
       padding-top:0;
@@ -414,29 +439,19 @@
       margin-top:12px;
     }
 
-    .muted{color:var(--muted)}
-    .small{font-size:13px}
-    .strong{font-weight:800}
+    .muted{ color:var(--muted); }
+    .small{ font-size:13px; }
+    .strong{ font-weight:800; }
 
     @media (max-width:1024px){
-      .hero, .grid, .result-grid{
-        grid-template-columns:1fr;
-      }
-      .stats{
-        grid-template-columns:repeat(2,1fr);
-      }
+      .hero, .grid, .result-grid{ grid-template-columns:1fr; }
+      .stats{ grid-template-columns:repeat(2,1fr); }
     }
 
     @media (max-width:640px){
-      .drop-row, .pair, .stats{
-        grid-template-columns:1fr;
-      }
-      .wrap{
-        padding:14px 12px 34px;
-      }
-      .hero-main, .logo-box, .panel{
-        padding:18px;
-      }
+      .upload-grid, .pair, .stats{ grid-template-columns:1fr; }
+      .wrap{ padding:14px 12px 34px; }
+      .hero-main, .logo-box, .panel{ padding:18px; }
     }
   </style>
 </head>
@@ -455,7 +470,7 @@
       <div class="logo-box glass">
         <div>
           <div class="logo-shell">
-            <img id="brandLogo" src="logo.png/logo.png" alt="Engenho Coradini">
+            <img src="logo.png/logo.png" alt="Engenho Coradini">
           </div>
           <div class="brand-name">Engenho Coradini Ltda</div>
         </div>
@@ -474,35 +489,41 @@
           <h2>Arquivos</h2>
           <p>Os arquivos são lidos só no navegador. Nada é salvo.</p>
 
-          <div id="dropzone" class="dropzone">
-            <div class="drop-row">
-              <div class="drop-card">
-                <div>
-                  <div class="drop-title">XML do MDF-e</div>
-                  <div class="drop-meta">
-                    Arraste o XML para esta área ou selecione manualmente.
-                  </div>
-                </div>
-                <div>
-                  <label class="file-btn ghost" for="xmlInput">Selecionar XML</label>
-                  <input id="xmlInput" type="file" accept=".xml,text/xml">
-                  <div id="xmlName" class="file-name">Nenhum arquivo selecionado</div>
+          <div class="upload-grid">
+            <div id="xmlCard" class="upload-card">
+              <div class="upload-top">
+                <div class="upload-badge">Documento principal</div>
+                <div class="upload-title">XML do MDF-e</div>
+                <div class="upload-desc">
+                  Clica nesta caixa ou arrasta o arquivo XML do MDF-e para dentro dela.
                 </div>
               </div>
 
-              <div class="drop-card">
-                <div>
-                  <div class="drop-title">PDF do relatório</div>
-                  <div class="drop-meta">
-                    Arraste o PDF para esta área ou selecione manualmente.
-                  </div>
-                </div>
-                <div>
-                  <label class="file-btn ghost" for="pdfInput">Selecionar PDF</label>
-                  <input id="pdfInput" type="file" accept="application/pdf,.pdf">
-                  <div id="pdfName" class="file-name">Nenhum arquivo selecionado</div>
+              <div class="upload-bottom">
+                <button type="button" class="big-select" id="xmlBtn">Selecionar XML do MDF-e</button>
+                <div class="drop-hint">Também aceita arrastar e soltar.</div>
+                <div id="xmlName" class="file-name">Nenhum arquivo selecionado</div>
+              </div>
+
+              <input id="xmlInput" type="file" accept=".xml,text/xml">
+            </div>
+
+            <div id="pdfCard" class="upload-card">
+              <div class="upload-top">
+                <div class="upload-badge">Relatório operacional</div>
+                <div class="upload-title">PDF do relatório</div>
+                <div class="upload-desc">
+                  Clica nesta caixa ou arrasta o arquivo PDF do relatório para dentro dela.
                 </div>
               </div>
+
+              <div class="upload-bottom">
+                <button type="button" class="big-select" id="pdfBtn">Selecionar PDF do relatório</button>
+                <div class="drop-hint">Também aceita arrastar e soltar.</div>
+                <div id="pdfName" class="file-name">Nenhum arquivo selecionado</div>
+              </div>
+
+              <input id="pdfInput" type="file" accept="application/pdf,.pdf">
             </div>
           </div>
 
@@ -602,8 +623,7 @@
           <h2>Observações</h2>
           <div class="rule-card">
             <div class="muted small">
-              Esta versão é a base operacional do conferente. A próxima camada ideal é incluir uma matriz de regras por cenário
-              e, se vocês quiserem, um parecer final mais duro:
+              Esta versão é a base operacional do conferente. A próxima camada ideal é incluir um parecer final:
               <br><br>
               <span class="strong">OK para liberar</span><br>
               <span class="strong">Liberar com alerta</span><br>
@@ -630,8 +650,8 @@
     function normalizeText(value){
       return String(value || '')
         .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/\s+/g, ' ')
+        .replace(/[\\u0300-\\u036f]/g, '')
+        .replace(/\\s+/g, ' ')
         .trim()
         .toUpperCase();
     }
@@ -643,9 +663,9 @@
     function parseBRNumber(value){
       if (value == null) return null;
       const s = String(value)
-        .replace(/\./g, '')
+        .replace(/\\./g, '')
         .replace(',', '.')
-        .replace(/[^\d.-]/g, '');
+        .replace(/[^\\d.-]/g, '');
       const n = Number(s);
       return Number.isFinite(n) ? n : null;
     }
@@ -666,7 +686,7 @@
       for(let i = 1; i <= pdf.numPages; i++){
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
-        text += '\n' + content.items.map(item => item.str).join(' ');
+        text += '\\n' + content.items.map(item => item.str).join(' ');
       }
       return text;
     }
@@ -715,13 +735,13 @@
       const raw = String(text || '');
       const normalized = normalizeText(raw);
 
-      const transportador = raw.match(/Transportador[:\s]*(.+?)(?:Placa Ve[ií]culo A|\* Rateio|$)/i)?.[1]?.trim() || '';
-      const placaTracao = raw.match(/Placa Ve[ií]culo A[:\s]*([A-Z]{3}[- ]?[0-9A-Z][0-9]{2,3})/i)?.[1] || '';
-      const placaReboque = raw.match(/Placa Carreta[:\s]*([A-Z]{3}[- ]?[0-9]{4})/i)?.[1] || '';
-      const totalFrete = parseBRNumber(raw.match(/Valor do Frete[.\s:]*([\d.]+,\d+)/i)?.[1]);
-      const totalNotas = parseBRNumber(raw.match(/Valor Total das Notas[.\s:]*([\d.]+,\d+)/i)?.[1]);
+      const transportador = raw.match(/Transportador[:\\s]*(.+?)(?:Placa Ve[ií]culo A|\\* Rateio|$)/i)?.[1]?.trim() || '';
+      const placaTracao = raw.match(/Placa Ve[ií]culo A[:\\s]*([A-Z]{3}[- ]?[0-9A-Z][0-9]{2,3})/i)?.[1] || '';
+      const placaReboque = raw.match(/Placa Carreta[:\\s]*([A-Z]{3}[- ]?[0-9]{4})/i)?.[1] || '';
+      const totalFrete = parseBRNumber(raw.match(/Valor do Frete[.\\s:]*([\\d.]+,\\d+)/i)?.[1]);
+      const totalNotas = parseBRNumber(raw.match(/Valor Total das Notas[.\\s:]*([\\d.]+,\\d+)/i)?.[1]);
 
-      const notaRegex = /(\d{6}\/\d)\s+([\d.]+,\d{2})/g;
+      const notaRegex = /(\\d{6}\\/\\d)\\s+([\\d.]+,\\d{2})/g;
       const notas = [];
       let m;
       while ((m = notaRegex.exec(raw)) !== null) {
@@ -749,7 +769,6 @@
           motivo: 'Há múltiplos CT-e, municípios ou itens no relatório.'
         };
       }
-
       return {
         tipo: 'Provável lotação',
         motivo: 'Há indício de operação única.'
@@ -996,7 +1015,7 @@
 
     async function runAnalysis(){
       if (!state.xmlFile || !state.pdfFile){
-        alert('Anexa o XML e o PDF.');
+        alert('Seleciona os dois arquivos: XML do MDF-e e PDF do relatório.');
         return;
       }
 
@@ -1045,6 +1064,53 @@
       switchTab('arquivos');
     }
 
+    function activateUploadCard(cardId, inputId, kind){
+      const card = $(cardId);
+      const input = $(inputId);
+
+      card.addEventListener('click', (e) => {
+        if (e.target.tagName.toLowerCase() === 'button') return;
+        input.click();
+      });
+
+      ['dragenter','dragover'].forEach(evt => {
+        card.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          card.classList.add('drag');
+        });
+      });
+
+      ['dragleave','drop'].forEach(evt => {
+        card.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          card.classList.remove('drag');
+        });
+      });
+
+      card.addEventListener('drop', (e) => {
+        const files = Array.from(e.dataTransfer.files || []);
+        const file = files[0];
+        if (!file) return;
+
+        const lower = file.name.toLowerCase();
+
+        if (kind === 'xml' && lower.endsWith('.xml')) {
+          state.xmlFile = file;
+          setFileName('xml', file.name);
+        } else if (kind === 'pdf' && lower.endsWith('.pdf')) {
+          state.pdfFile = file;
+          setFileName('pdf', file.name);
+        } else {
+          alert(kind === 'xml' ? 'Solta aqui apenas arquivo XML.' : 'Solta aqui apenas arquivo PDF.');
+        }
+      });
+    }
+
+    $('xmlBtn').addEventListener('click', () => $('xmlInput').click());
+    $('pdfBtn').addEventListener('click', () => $('pdfInput').click());
+
     $('xmlInput').addEventListener('change', (e) => {
       state.xmlFile = e.target.files?.[0] || null;
       setFileName('xml', state.xmlFile?.name);
@@ -1062,50 +1128,11 @@
       btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
 
-    const dropzone = $('dropzone');
+    activateUploadCard('xmlCard', 'xmlInput', 'xml');
+    activateUploadCard('pdfCard', 'pdfInput', 'pdf');
 
-    ['dragenter','dragover'].forEach((evt) => {
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.add('drag');
-      });
-    });
-
-    ['dragleave','drop'].forEach((evt) => {
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.remove('drag');
-      });
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const files = Array.from(e.dataTransfer.files || []);
-
-      files.forEach((file) => {
-        const lower = file.name.toLowerCase();
-
-        if (lower.endsWith('.xml')) {
-          state.xmlFile = file;
-          setFileName('xml', file.name);
-        } else if (lower.endsWith('.pdf')) {
-          state.pdfFile = file;
-          setFileName('pdf', file.name);
-        }
-      });
-    });
-
-    document.addEventListener('dragover', (e) => {
-      e.preventDefault();
-    });
-
-    document.addEventListener('drop', (e) => {
-      e.preventDefault();
-    });
+    document.addEventListener('dragover', (e) => e.preventDefault());
+    document.addEventListener('drop', (e) => e.preventDefault());
   </script>
 </body>
 </html>
