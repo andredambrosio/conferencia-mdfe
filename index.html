@@ -331,10 +331,12 @@
       </div>
       <div class="logo-box glass">
         <div>
-          <div class="logo-mark">🌾</div>
-          <h2 style="margin:0 0 6px; font-size: 28px; letter-spacing:-.03em;">Logo do Engenho</h2>
+          <div style="width:140px;height:140px;border-radius:32px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);margin:0 auto 18px;overflow:hidden;">
+            <img src="logo.png" alt="Engenho Coradini" style="width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 10px 28px rgba(0,0,0,.20));" />
+          </div>
+          <h2 style="margin:0 0 6px; font-size: 28px; letter-spacing:-.03em;">Engenho Coradini Ltda</h2>
           <p class="muted" style="max-width:320px; margin:0 auto;">
-            Posso trocar essa marca e o fundo pela logo e imagem reais do engenho assim que tu me mandar os arquivos.
+            Conferência leve, visual premium e operação direta: arrastar, analisar e apontar exatamente o que precisa ser corrigido.
           </p>
         </div>
       </div>
@@ -343,20 +345,20 @@
     <section class="panel-grid">
       <div class="panel glass">
         <h2>Arquivos</h2>
-        <p>Arrasta e solta aqui ou usa os botões. A análise roda no navegador para ficar leve.</p>
+        <p>Arrasta e solta aqui ou usa os botões. A análise roda no navegador para ficar leve. Os arquivos não são enviados nem salvos.</p>
 
         <div id="dropzone" class="dropzone">
           <div class="drop-row">
             <div class="drop-card">
               <div class="drop-title">XML do MDF-e</div>
-              <div class="drop-meta">Manifesto autorizado para conferência estrutural, operação, placas, municípios e indícios de pagamento.</div>
+              <div class="drop-meta">Manifesto autorizado para conferência estrutural, operação, placas, municípios, indícios de pagamento e presença de CIOT.</div>
               <label class="file-btn ghost" for="xmlInput">Selecionar XML</label>
               <input id="xmlInput" type="file" accept=".xml,text/xml" />
               <div id="xmlName" class="file-name">Nenhum arquivo selecionado</div>
             </div>
             <div class="drop-card">
               <div class="drop-title">Relatório PDF</div>
-              <div class="drop-meta">Relatório operacional do sistema para cruzar transportador, placas, totais, notas e frete.</div>
+              <div class="drop-meta">Relatório operacional do sistema para cruzar transportador, placas, totais, notas e frete. Nada é salvo: os arquivos são lidos só no navegador.</div>
               <label class="file-btn ghost" for="pdfInput">Selecionar PDF</label>
               <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
               <div id="pdfName" class="file-name">Nenhum arquivo selecionado</div>
@@ -434,6 +436,7 @@
     const state = {
       xmlFile: null,
       pdfFile: null,
+      xmlRaw: '',
       mdfe: null,
       relatorio: null,
     };
@@ -503,6 +506,7 @@
 
       const plates = Array.from(doc.getElementsByTagName('placa')).map((n) => n.textContent.trim());
 
+      const ciotNodes = Array.from(doc.getElementsByTagName('CIOT')).map((n) => n.textContent.trim()).filter(Boolean);
       return {
         chave: doc.getElementsByTagName('infMDFe')[0]?.getAttribute('Id')?.replace(/^MDFe/, '') || '',
         status: getTagText(doc, 'cStat'),
@@ -519,6 +523,8 @@
         placaReboque: plates[1] || '',
         municipios: municipalities,
         temInfPag: doc.getElementsByTagName('infPag').length > 0,
+        temCIOT: ciotNodes.length > 0,
+        ciots: ciotNodes,
       };
     }
 
@@ -695,6 +701,16 @@
         );
       }
 
+      addCheck(
+        checks,
+        mdfe.temCIOT ? 'ok' : 'warn',
+        'CIOT no XML',
+        mdfe.temCIOT ? 'CIOT identificado no arquivo.' : 'CIOT não encontrado no XML. Isso pode ser aceitável ou não, conforme o tipo de contratação e a operação.',
+        mdfe.temCIOT ? mdfe.ciots.join(', ') : 'Ausente',
+        mdfe.temCIOT ? 'Encontrado' : 'Avaliar necessidade',
+        'Se a operação exigir CIOT, preencher ou revisar esse dado no sistema emissor antes de liberar.'
+      );
+
       return checks;
     }
 
@@ -766,6 +782,7 @@
         ['Valor notas relatório', formatMoney(relatorio.totalNotas)],
         ['Carga MDF-e', formatMoney(mdfe.vCarga)],
         ['Quantidade CT-e', String(mdfe.qCTe || 0)],
+        ['CIOT', mdfe.temCIOT ? mdfe.ciots.join(', ') : 'Não encontrado'],
       ];
 
       summary.innerHTML = cards.map(([a,b]) => `
@@ -784,6 +801,7 @@
       try {
         $('analisarBtn').textContent = 'Analisando...';
         const xmlText = await state.xmlFile.text();
+        state.xmlRaw = xmlText;
         const pdfText = await readPdfText(state.pdfFile);
         state.mdfe = parseMdfe(xmlText);
         state.relatorio = parseRelatorio(pdfText);
