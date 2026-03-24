@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Conferência MDF-e | Engenho Coradini</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
   <style>
@@ -18,10 +18,9 @@
       --shadow:0 18px 60px rgba(0,0,0,.28);
       --radius:26px;
     }
-
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
     body{
+      margin:0;
       min-height:100vh;
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
       color:var(--text);
@@ -29,13 +28,7 @@
         linear-gradient(rgba(8,12,16,.78), rgba(8,12,16,.88)),
         url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat fixed;
     }
-
-    .wrap{
-      max-width:1240px;
-      margin:0 auto;
-      padding:22px 16px 40px;
-    }
-
+    .wrap{max-width:1200px;margin:0 auto;padding:22px 16px 40px}
     .glass{
       background:var(--card);
       border:1px solid var(--line);
@@ -44,352 +37,74 @@
       -webkit-backdrop-filter:blur(18px);
       box-shadow:var(--shadow);
     }
-
     .hero{
       display:grid;
       grid-template-columns:1.15fr .85fr;
       gap:18px;
       margin-bottom:18px;
     }
-
-    .hero-main{
-      padding:26px;
-      min-height:230px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-    }
-
+    .hero-main,.logo-box,.panel{padding:22px}
+    .hero-main{min-height:220px;display:flex;flex-direction:column;justify-content:center}
     .eyebrow{
-      display:inline-flex;
-      width:fit-content;
-      padding:10px 14px;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
-      color:var(--muted);
-      font-size:12px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      font-weight:800;
+      display:inline-flex;width:fit-content;padding:10px 14px;border-radius:999px;
+      background:rgba(255,255,255,.08);color:var(--muted);font-size:12px;
+      letter-spacing:.08em;text-transform:uppercase;font-weight:800;
     }
-
-    h1{
-      margin:16px 0 10px;
-      font-size:clamp(30px,4vw,54px);
-      line-height:.98;
-      letter-spacing:-.03em;
-    }
-
-    .subtitle{
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.6;
-      max-width:760px;
-    }
-
-    .logo-box{
-      min-height:230px;
-      padding:22px;
-      display:grid;
-      place-items:center;
-      text-align:center;
-    }
-
+    h1{margin:16px 0 10px;font-size:clamp(30px,4vw,54px);line-height:.98;letter-spacing:-.03em}
+    .subtitle{color:var(--muted);font-size:15px;line-height:1.6;max-width:760px}
+    .logo-box{text-align:center;display:grid;place-items:center}
     .logo-shell{
-      width:170px;
-      height:170px;
-      border-radius:36px;
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.14);
-      display:grid;
-      place-items:center;
-      overflow:hidden;
+      width:170px;height:170px;border-radius:36px;background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);display:grid;place-items:center;overflow:hidden;
     }
-
-    .logo-shell img{
-      width:88%;
-      height:88%;
-      object-fit:contain;
-      display:block;
+    .logo-shell img{width:88%;height:88%;object-fit:contain;display:block}
+    .brand-name{margin-top:16px;font-size:30px;font-weight:900;letter-spacing:-.03em}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+    .panel h2{margin:0 0 8px;font-size:22px;letter-spacing:-.02em}
+    .panel p{color:var(--muted);line-height:1.6}
+    .file-block{
+      margin-top:16px;padding:18px;border-radius:20px;background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
     }
-
-    .brand-name{
-      margin-top:16px;
-      font-size:30px;
-      font-weight:900;
-      letter-spacing:-.03em;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:1.05fr .95fr;
-      gap:18px;
-    }
-
-    .panel{
-      padding:22px;
-    }
-
-    .panel h2{
-      margin:0 0 8px;
-      font-size:22px;
-      letter-spacing:-.02em;
-    }
-
-    .panel p{
-      color:var(--muted);
-      line-height:1.6;
-    }
-
-    .upload-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:16px;
-      margin-top:18px;
-    }
-
-    .dropbox{
-      border:2px dashed rgba(255,255,255,.20);
-      border-radius:24px;
-      background:rgba(255,255,255,.05);
-      padding:22px;
-      min-height:250px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      transition:.18s ease;
-    }
-
-    .dropbox.drag{
-      border-color:rgba(211,177,92,.85);
-      background:rgba(211,177,92,.10);
-    }
-
-    .drop-title{
-      font-size:24px;
-      font-weight:900;
-      letter-spacing:-.03em;
-      margin-bottom:8px;
-    }
-
-    .drop-sub{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    .drop-actions{
-      margin-top:18px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .select-btn, button{
-      appearance:none;
-      border:0;
-      border-radius:16px;
-      padding:16px 18px;
-      font-weight:900;
-      font-size:14px;
-      cursor:pointer;
-    }
-
-    .select-btn{
-      background:linear-gradient(180deg,#e0c274,#c9a24a);
-      color:#1f1708;
-      text-align:center;
-      display:block;
-      text-decoration:none;
-    }
-
-    .hint{
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .file-name{
-      color:var(--gold);
-      font-size:13px;
-      word-break:break-word;
-      min-height:18px;
-    }
-
+    .file-title{font-size:20px;font-weight:900;margin-bottom:8px}
+    .file-help{font-size:13px;color:var(--muted);margin-bottom:12px}
     input[type="file"]{
-      display:none;
+      display:block;width:100%;padding:12px;background:#fff;color:#111;
+      border-radius:12px;border:0;
     }
-
-    .actions{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:18px;
+    .file-name{margin-top:10px;color:var(--gold);font-size:13px;word-break:break-word}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    button{
+      appearance:none;border:0;border-radius:16px;padding:14px 18px;font-weight:900;
+      font-size:14px;cursor:pointer;
     }
-
-    .primary{
-      background:linear-gradient(180deg,#e0c274,#c9a24a);
-      color:#1f1708;
-    }
-
-    .ghost{
-      background:rgba(255,255,255,.08);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.12);
-    }
-
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:14px;
-      margin-top:18px;
-    }
-
-    .stat{
-      padding:18px;
-      border-radius:22px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-    }
-
-    .stat-label{
-      color:var(--muted);
-      font-size:12px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-    }
-
-    .stat-value{
-      margin-top:8px;
-      font-size:30px;
-      font-weight:900;
-      letter-spacing:-.04em;
-    }
-
-    .list{
-      display:grid;
-      gap:12px;
-      margin-top:14px;
-    }
-
+    .primary{background:linear-gradient(180deg,#e0c274,#c9a24a);color:#1f1708}
+    .ghost{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.12)}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+    .stat{padding:18px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10)}
+    .stat-label{color:var(--muted);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+    .stat-value{margin-top:8px;font-size:30px;font-weight:900;letter-spacing:-.04em}
+    .list{display:grid;gap:12px;margin-top:14px}
     .check{
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.10);
-      padding:16px;
-      background:rgba(255,255,255,.05);
+      border-radius:22px;border:1px solid rgba(255,255,255,.10);padding:16px;background:rgba(255,255,255,.05);
     }
-
-    .check-top{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:flex-start;
-    }
-
-    .check h3{
-      margin:0;
-      font-size:16px;
-    }
-
-    .check p{
-      margin:6px 0 0;
-      font-size:14px;
-      color:var(--muted);
-      line-height:1.55;
-    }
-
-    .pair{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    .pair-box{
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:18px;
-      padding:12px;
-      min-height:82px;
-    }
-
-    .pair-label{
-      color:var(--muted);
-      font-size:11px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      margin-bottom:6px;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:800;
-      white-space:nowrap;
-    }
-
-    .ok{
-      background:rgba(31,193,107,.14);
-      color:#9dffca;
-      border:1px solid rgba(31,193,107,.28);
-    }
-
-    .warn{
-      background:rgba(240,182,74,.14);
-      color:#ffe0a2;
-      border:1px solid rgba(240,182,74,.28);
-    }
-
-    .bad{
-      background:rgba(255,107,107,.14);
-      color:#ffc0c0;
-      border:1px solid rgba(255,107,107,.28);
-    }
-
-    .error-box{
-      margin-top:14px;
-      border-radius:22px;
-      padding:18px;
-      background:rgba(255,107,107,.08);
-      border:1px solid rgba(255,107,107,.18);
-    }
-
-    .error-item{
-      padding:14px 0;
-      border-top:1px solid rgba(255,255,255,.08);
-    }
-
-    .error-item:first-child{
-      border-top:0;
-      padding-top:0;
-    }
-
+    .check-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .check h3{margin:0;font-size:16px}
+    .check p{margin:6px 0 0;font-size:14px;color:var(--muted);line-height:1.55}
+    .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .pair-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:12px;min-height:82px}
+    .pair-label{color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+    .badge{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
+    .ok{background:rgba(31,193,107,.14);color:#9dffca;border:1px solid rgba(31,193,107,.28)}
+    .warn{background:rgba(240,182,74,.14);color:#ffe0a2;border:1px solid rgba(240,182,74,.28)}
+    .bad{background:rgba(255,107,107,.14);color:#ffc0c0;border:1px solid rgba(255,107,107,.28)}
+    .error-box{margin-top:14px;border-radius:22px;padding:18px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.18)}
+    .error-item{padding:14px 0;border-top:1px solid rgba(255,255,255,.08)}
+    .error-item:first-child{border-top:0;padding-top:0}
     .muted{color:var(--muted)}
     .small{font-size:13px}
-
-    @media (max-width:1024px){
-      .hero, .grid{
-        grid-template-columns:1fr;
-      }
-      .stats{
-        grid-template-columns:repeat(2,1fr);
-      }
-    }
-
-    @media (max-width:640px){
-      .upload-grid, .pair, .stats{
-        grid-template-columns:1fr;
-      }
-      .wrap{
-        padding:14px 12px 34px;
-      }
-      .hero-main, .logo-box, .panel{
-        padding:18px;
-      }
-    }
+    @media (max-width:1024px){.hero,.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.pair,.stats{grid-template-columns:1fr}.wrap{padding:14px 12px 34px}}
   </style>
 </head>
 <body>
@@ -399,7 +114,7 @@
         <div class="eyebrow">Conferência automática · MDF-e + Relatório</div>
         <h1>Validação rápida, visual limpa e erro apontado no lugar certo.</h1>
         <div class="subtitle">
-          Escolhe ou arrasta o XML do MDF-e e o PDF do relatório. O sistema cruza os dados principais
+          Seleciona o XML do MDF-e e o PDF do relatório. O sistema cruza os dados principais
           e mostra o que revisar antes de liberar a carga.
         </div>
       </div>
@@ -419,36 +134,18 @@
         <h2>Arquivos</h2>
         <p>Os arquivos são lidos só no navegador. Nada é salvo.</p>
 
-        <div class="upload-grid">
-          <div id="xmlBox" class="dropbox">
-            <div>
-              <div class="drop-title">XML do MDF-e</div>
-              <div class="drop-sub">Clica no botão abaixo ou arrasta aqui o arquivo XML do MDF-e.</div>
-            </div>
+        <div class="file-block">
+          <div class="file-title">XML do MDF-e</div>
+          <div class="file-help">Usa o seletor nativo do navegador.</div>
+          <input id="xmlInput" type="file" accept=".xml,text/xml">
+          <div id="xmlName" class="file-name">Nenhum arquivo selecionado</div>
+        </div>
 
-            <div class="drop-actions">
-              <label for="xmlInput" class="select-btn">Selecionar XML do MDF-e</label>
-              <div class="hint">Também aceita arrastar e soltar.</div>
-              <div id="xmlName" class="file-name">Nenhum arquivo selecionado</div>
-            </div>
-
-            <input id="xmlInput" type="file" accept=".xml,text/xml">
-          </div>
-
-          <div id="pdfBox" class="dropbox">
-            <div>
-              <div class="drop-title">PDF do relatório</div>
-              <div class="drop-sub">Clica no botão abaixo ou arrasta aqui o arquivo PDF do relatório.</div>
-            </div>
-
-            <div class="drop-actions">
-              <label for="pdfInput" class="select-btn">Selecionar PDF do relatório</label>
-              <div class="hint">Também aceita arrastar e soltar.</div>
-              <div id="pdfName" class="file-name">Nenhum arquivo selecionado</div>
-            </div>
-
-            <input id="pdfInput" type="file" accept="application/pdf,.pdf">
-          </div>
+        <div class="file-block">
+          <div class="file-title">PDF do relatório</div>
+          <div class="file-help">Usa o seletor nativo do navegador.</div>
+          <input id="pdfInput" type="file" accept="application/pdf,.pdf">
+          <div id="pdfName" class="file-name">Nenhum arquivo selecionado</div>
         </div>
 
         <div class="actions">
@@ -518,10 +215,7 @@
 
     function parseBRNumber(value){
       if (value == null) return null;
-      const s = String(value)
-        .replace(/\\./g, '')
-        .replace(',', '.')
-        .replace(/[^\\d.-]/g, '');
+      const s = String(value).replace(/\\./g, '').replace(',', '.').replace(/[^\\d.-]/g, '');
       const n = Number(s);
       return Number.isFinite(n) ? n : null;
     }
@@ -529,10 +223,6 @@
     function formatMoney(value){
       if (value == null || Number.isNaN(value)) return 'não encontrado';
       return value.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-    }
-
-    function setFileName(kind, name){
-      $(kind === 'xml' ? 'xmlName' : 'pdfName').textContent = name || 'Nenhum arquivo selecionado';
     }
 
     async function readPdfText(file){
@@ -554,9 +244,7 @@
 
     function parseMdfe(xmlText){
       const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-      if (doc.getElementsByTagName('parsererror')[0]) {
-        throw new Error('XML inválido.');
-      }
+      if (doc.getElementsByTagName('parsererror')[0]) throw new Error('XML inválido.');
 
       const municipalities = Array.from(doc.getElementsByTagName('infMunDescarga')).map((node) => ({
         municipio: getTagText(node, 'xMunDescarga'),
@@ -615,15 +303,9 @@
 
     function inferirTipoOperacao(mdfe, relatorio){
       if (mdfe.qCTe > 1 || mdfe.municipios.length > 1 || relatorio.notas.length > 1) {
-        return {
-          tipo: 'Provável fracionada',
-          motivo: 'Há múltiplos CT-e, municípios ou itens no relatório.'
-        };
+        return { tipo: 'Provável fracionada', motivo: 'Há múltiplos CT-e, municípios ou itens no relatório.' };
       }
-      return {
-        tipo: 'Provável lotação',
-        motivo: 'Há indício de operação única.'
-      };
+      return { tipo: 'Provável lotação', motivo: 'Há indício de operação única.' };
     }
 
     function addCheck(list, status, title, note, left, right, fix){
@@ -633,9 +315,7 @@
     function buildChecks(mdfe, relatorio){
       const checks = [];
 
-      addCheck(
-        checks,
-        mdfe.status === '100' ? 'ok' : 'bad',
+      addCheck(checks, mdfe.status === '100' ? 'ok' : 'bad',
         'Autorização do MDF-e',
         mdfe.status === '100' ? 'Manifesto autorizado normalmente.' : 'Manifesto sem autorização normal.',
         mdfe.status ? `${mdfe.status} ${mdfe.motivo || ''}` : 'não encontrado',
@@ -647,9 +327,7 @@
         normalizeText(mdfe.emitente).includes(normalizeText(relatorio.transportador)) ||
         normalizeText(relatorio.transportador).includes(normalizeText(mdfe.emitente));
 
-      addCheck(
-        checks,
-        emitenteMatch ? 'ok' : 'bad',
+      addCheck(checks, emitenteMatch ? 'ok' : 'bad',
         'Transportador / emitente',
         emitenteMatch ? 'Nome compatível entre MDF-e e relatório.' : 'Nome do transportador não parece bater.',
         mdfe.emitente || 'não encontrado',
@@ -658,9 +336,7 @@
       );
 
       const tracaoMatch = normalizePlate(mdfe.placaTracao) === normalizePlate(relatorio.placaTracao);
-      addCheck(
-        checks,
-        tracaoMatch ? 'ok' : 'bad',
+      addCheck(checks, tracaoMatch ? 'ok' : 'bad',
         'Placa do veículo tração',
         tracaoMatch ? 'Placa confere.' : 'Placa de tração divergente.',
         mdfe.placaTracao || 'não encontrado',
@@ -669,9 +345,7 @@
       );
 
       const reboqueMatch = normalizePlate(mdfe.placaReboque) === normalizePlate(relatorio.placaReboque);
-      addCheck(
-        checks,
-        reboqueMatch ? 'ok' : 'bad',
+      addCheck(checks, reboqueMatch ? 'ok' : 'bad',
         'Placa da carreta / reboque',
         reboqueMatch ? 'Placa confere.' : 'Placa da carreta divergente.',
         mdfe.placaReboque || 'não encontrado',
@@ -680,9 +354,7 @@
       );
 
       const cargaMatch = Math.abs((mdfe.vCarga || 0) - (relatorio.totalNotas || 0)) < 0.01;
-      addCheck(
-        checks,
-        cargaMatch ? 'ok' : 'bad',
+      addCheck(checks, cargaMatch ? 'ok' : 'bad',
         'Valor total da carga x valor total das notas',
         cargaMatch ? 'Os totais estão coerentes.' : 'O valor da carga do MDF-e não bate com o total das notas do relatório.',
         formatMoney(mdfe.vCarga),
@@ -691,9 +363,7 @@
       );
 
       const qtdItensMatch = mdfe.qCTe === relatorio.notas.length;
-      addCheck(
-        checks,
-        qtdItensMatch ? 'ok' : 'warn',
+      addCheck(checks, qtdItensMatch ? 'ok' : 'warn',
         'Quantidade de CT-e x linhas do relatório',
         qtdItensMatch ? 'Quantidade compatível.' : 'A contagem não bate exatamente.',
         String(mdfe.qCTe || 0),
@@ -702,9 +372,7 @@
       );
 
       const operacao = inferirTipoOperacao(mdfe, relatorio);
-      addCheck(
-        checks,
-        'ok',
+      addCheck(checks, 'ok',
         'Classificação da operação',
         operacao.motivo,
         operacao.tipo,
@@ -714,9 +382,7 @@
           : 'Se fracionada, manter coerência documental.'
       );
 
-      addCheck(
-        checks,
-        mdfe.temCIOT ? 'ok' : 'warn',
+      addCheck(checks, mdfe.temCIOT ? 'ok' : 'warn',
         'CIOT',
         mdfe.temCIOT ? 'CIOT encontrado no XML.' : 'CIOT não encontrado no XML.',
         mdfe.temCIOT ? mdfe.ciots.join(', ') : 'Ausente',
@@ -730,11 +396,9 @@
     function renderChecks(checks){
       const root = $('checks');
       root.innerHTML = '';
-
       checks.forEach((check) => {
         const badgeClass = check.status === 'ok' ? 'ok' : check.status === 'warn' ? 'warn' : 'bad';
         const badgeText = check.status === 'ok' ? 'OK' : check.status === 'warn' ? 'ALERTA' : 'ERRO';
-
         const el = document.createElement('div');
         el.className = 'check';
         el.innerHTML = `
@@ -763,12 +427,10 @@
     function renderErrors(checks){
       const errors = checks.filter((c) => c.status !== 'ok');
       const root = $('errorsArea');
-
       if (!errors.length){
         root.innerHTML = '<strong>Tudo certo.</strong><div class="muted small" style="margin-top:8px;">Nenhum erro crítico encontrado nesta leitura.</div>';
         return;
       }
-
       root.innerHTML = errors.map((e, i) => `
         <div class="error-item">
           <div><strong>${i + 1}. ${e.title}</strong></div>
@@ -818,13 +480,10 @@
 
       try{
         $('analisarBtn').textContent = 'Analisando...';
-
         const xmlText = await state.xmlFile.text();
         const pdfText = await readPdfText(state.pdfFile);
-
         state.mdfe = parseMdfe(xmlText);
         state.relatorio = parseRelatorio(pdfText);
-
         const checks = buildChecks(state.mdfe, state.relatorio);
         renderChecks(checks);
         renderErrors(checks);
@@ -845,8 +504,8 @@
       state.relatorio = null;
       $('xmlInput').value = '';
       $('pdfInput').value = '';
-      setFileName('xml', 'Nenhum arquivo selecionado');
-      setFileName('pdf', 'Nenhum arquivo selecionado');
+      $('xmlName').textContent = 'Nenhum arquivo selecionado';
+      $('pdfName').textContent = 'Nenhum arquivo selecionado';
       $('checks').innerHTML = '';
       $('summary').innerHTML = '';
       $('errorsArea').innerHTML = '<div class="muted">Ainda não há análise.</div>';
@@ -856,67 +515,18 @@
       $('badCount').textContent = '0';
     }
 
-    function setupDrop(boxId, inputId, expectedExt, kind){
-      const box = $(boxId);
-      const input = $(inputId);
+    $('xmlInput').addEventListener('change', (e) => {
+      state.xmlFile = e.target.files?.[0] || null;
+      $('xmlName').textContent = state.xmlFile ? state.xmlFile.name : 'Nenhum arquivo selecionado';
+    });
 
-      ['dragenter','dragover'].forEach(evt => {
-        box.addEventListener(evt, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          box.classList.add('drag');
-        });
-      });
-
-      ['dragleave','drop'].forEach(evt => {
-        box.addEventListener(evt, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          box.classList.remove('drag');
-        });
-      });
-
-      box.addEventListener('drop', (e) => {
-        const file = e.dataTransfer.files && e.dataTransfer.files[0];
-        if (!file) return;
-
-        const lower = file.name.toLowerCase();
-        if (!lower.endsWith(expectedExt)) {
-          alert(kind === 'xml' ? 'Solta aqui apenas arquivo XML.' : 'Solta aqui apenas arquivo PDF.');
-          return;
-        }
-
-        if (kind === 'xml') {
-          state.xmlFile = file;
-          setFileName('xml', file.name);
-        } else {
-          state.pdfFile = file;
-          setFileName('pdf', file.name);
-        }
-      });
-
-      input.addEventListener('change', (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-
-        if (kind === 'xml') {
-          state.xmlFile = file;
-          setFileName('xml', file.name);
-        } else {
-          state.pdfFile = file;
-          setFileName('pdf', file.name);
-        }
-      });
-    }
+    $('pdfInput').addEventListener('change', (e) => {
+      state.pdfFile = e.target.files?.[0] || null;
+      $('pdfName').textContent = state.pdfFile ? state.pdfFile.name : 'Nenhum arquivo selecionado';
+    });
 
     $('analisarBtn').addEventListener('click', runAnalysis);
     $('limparBtn').addEventListener('click', resetAll);
-
-    setupDrop('xmlBox', 'xmlInput', '.xml', 'xml');
-    setupDrop('pdfBox', 'pdfInput', '.pdf', 'pdf');
-
-    document.addEventListener('dragover', (e) => e.preventDefault());
-    document.addEventListener('drop', (e) => e.preventDefault());
   </script>
 </body>
 </html>
