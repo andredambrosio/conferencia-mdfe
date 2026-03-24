@@ -1,0 +1,469 @@
+import React, { useMemo, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2, XCircle, AlertTriangle, Upload, FileText, Search } from "lucide-react";
+import * as pdfjsLib from "pdfjs-dist";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs`;
+
+function onlyDigits(value) {
+  return String(value || "").replace(/\D+/g, "");
+}
+
+function normalizeText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toUpperCase();
+}
+
+function normalizePlate(value) {
+  return String(value || "").replace(/[^A-Z0-9]/gi, "").toUpperCase();
+}
+
+function parseBRNumber(str) {
+  if (!str) return null;
+  const clean = String(str).replace(/\./g, "").replace(/,/g, ".").replace(/[^\d.-]/g, "");
+  const n = Number(clean);
+  return Number.isFinite(n) ? n : null;
+}
+
+function money(n) {
+  if (n == null || Number.isNaN(n)) return "-";
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
+}
+
+function qty(n) {
+  if (n == null || Number.isNaN(n)) return "-";
+  return new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 4 }).format(n);
+}
+
+function getTagText(parent, tag) {
+  if (!parent) return "";
+  const el = parent.getElementsByTagName(tag)[0];
+  return el?.textContent?.trim() || "";
+}
+
+function parseMdfeXml(xmlText) {
+  const doc = new DOMParser().parseFromString(xmlText, "application/xml");
+  const parseError = doc.getElementsByTagName("parsererror")[0];
+  if (parseError) throw new Error("XML inválido ou corrompido.");
+
+  const infMDFe = doc.getElementsByTagName("infMDFe")[0];
+  const emit = doc.getElementsByTagName("emit")[0];
+  const veicTracao = doc.getElementsByTagName("veicTracao")[0];
+  const veicReboque = doc.getElementsByTagName("veicReboque")[0];
+  const tot = doc.getElementsByTagName("tot")[0];
+  const prot = doc.getElementsByTagName("infProt")[0];
+
+  const descarregas = Array.from(doc.getElementsByTagName("infMunDescarga")).map((node) => ({
+    municipio: getTagText(node, "xMunDescarga"),
+    ctes: Array.from(node.getElementsByTagName("chCTe")).map((n) => n.textContent?.trim()).filter(Boolean),
+  }));
+
+  return {
+    chave: infMDFe?.getAttribute("Id")?.replace(/^MDFe/, "") || "",
+    emitente: {
+      nome: getTagText(emit, "xNome"),
+      fantasia: getTagText(emit, "xFant"),
+      cnpj: getTagText(emit, "CNPJ"),
+      uf: getTagText(emit, "UF"),
+      municipio: getTagText(emit, "xMun"),
+    },
+    viagem: {
+      dataEmissao: getTagText(doc, "dhEmi"),
+      ufIni: getTagText(doc, "UFIni"),
+      ufFim: getTagText(doc, "UFFim"),
+      percurso: Array.from(doc.getElementsByTagName("UFPer")).map((n) => n.textContent?.trim()).filter(Boolean),
+    },
+    veiculos: {
+      tracao: getTagText(veicTracao, "placa"),
+      reboque: getTagText(veicReboque, "placa"),
+    },
+    totais: {
+      qCTe: Number(getTagText(tot, "qCTe") || 0),
+      vCarga: Number(getTagText(tot, "vCarga") || 0),
+      qCarga: Number(getTagText(tot, "qCarga") || 0),
+    },
+    descarregas,
+    status: {
+      codigo: getTagText(prot, "cStat"),
+      motivo: getTagText(prot, "xMotivo"),
+    },
+    temInfPag: doc.getElementsByTagName("infPag").length > 0,
+  };
+}
+
+async function extractPdfText(file) {
+  const buffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+  let fullText = "";
+
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
+    const page = await pdf.getPage(pageNum);
+    const content = await page.getTextContent();
+    const pageText = content.items.map((item) => item.str).join(" ");
+    fullText += `\n[PAGINA ${pageNum}]\n${pageText}\n`;
+  }
+
+  return fullText;
+}
+
+function parseRelatorioText(text) {
+  const raw = text || "";
+  const normalized = normalizeText(raw);
+
+  const totalFreteMatch = raw.match(/Valor do Frete[.\s:]*([\d.,]+)/i);
+  const totalNotasMatch = raw.match(/Valor Total das Notas[.\s:]*([\d.,]+)/i);
+  const totalVolumesMatch = raw.match(/Total de Volumes[.\s:]*([\d.,]+)/i);
+  const quantidadeTotalMatch = raw.match(/Quantidade Total[.\s:]*([\d.,]+)/i);
+
+  const placaA = raw.match(/Placa Ve[ií]culo A[:\s]*([A-Z]{3}[- ]?\d[A-Z0-9]\d{2})/i)?.[1] || "";
+  const placaCarreta = raw.match(/Placa Carreta[:\s]*([A-Z]{3}[- ]?\d{4})/i)?.[1] || "";
+  const transportador = raw.match(/Transportador[:\s]*(.+?)(?:Placa Ve[ií]culo A|\* Rateio|$)/i)?.[1]?.trim() || "";
+
+  const embarcadorMatch = raw.match(/([A-ZÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ0-9 .&\-]+)\s+CNPJ[:\s]*(\d{14})/i);
+
+  const notas = [];
+  const noteRegex = /(\d{6}\/\d)\s+([\d.]+,\d{2})/g;
+  let m;
+  while ((m = noteRegex.exec(raw)) !== null) {
+    notas.push({
+      nota: m[1],
+      frete: parseBRNumber(m[2]),
+    });
+  }
+
+  const municipios = [];
+  const cidadeRegex = /\b(ASSIS CHATEAUBRIAND|FORMOSA DO OESTE|JESU[IÍ]TAS|PALOTINA)\b/gi;
+  let c;
+  while ((c = cidadeRegex.exec(normalized)) !== null) {
+    municipios.push(c[1]);
+  }
+
+  return {
+    transportador,
+    embarcador: embarcadorMatch
+      ? { nome: embarcadorMatch[1].trim(), cnpj: embarcadorMatch[2] }
+      : { nome: "", cnpj: "" },
+    placas: {
+      tracao: placaA,
+      reboque: placaCarreta,
+    },
+    totais: {
+      frete: parseBRNumber(totalFreteMatch?.[1]),
+      notas: parseBRNumber(totalNotasMatch?.[1]),
+      volumes: parseBRNumber(totalVolumesMatch?.[1]),
+      quantidade: parseBRNumber(quantidadeTotalMatch?.[1]),
+    },
+    notas,
+    municipios: [...new Set(municipios.map(normalizeText))],
+    textoBruto: raw,
+  };
+}
+
+function compareData(mdfe, relatorio) {
+  if (!mdfe || !relatorio) return [];
+
+  const checks = [];
+
+  const sameTransportador = normalizeText(mdfe.emitente.nome).includes(normalizeText(relatorio.transportador)) || normalizeText(relatorio.transportador).includes(normalizeText(mdfe.emitente.nome));
+  checks.push({
+    label: "Transportador",
+    ok: sameTransportador,
+    left: mdfe.emitente.nome || "-",
+    right: relatorio.transportador || "-",
+    note: sameTransportador ? "Confere" : "Nome divergente",
+  });
+
+  const samePlacaTracao = normalizePlate(mdfe.veiculos.tracao) === normalizePlate(relatorio.placas.tracao);
+  checks.push({
+    label: "Placa veículo tração",
+    ok: samePlacaTracao,
+    left: mdfe.veiculos.tracao || "-",
+    right: relatorio.placas.tracao || "-",
+    note: samePlacaTracao ? "Confere" : "Placa divergente",
+  });
+
+  const samePlacaReboque = normalizePlate(mdfe.veiculos.reboque) === normalizePlate(relatorio.placas.reboque);
+  checks.push({
+    label: "Placa carreta/reboque",
+    ok: samePlacaReboque,
+    left: mdfe.veiculos.reboque || "-",
+    right: relatorio.placas.reboque || "-",
+    note: samePlacaReboque ? "Confere" : "Placa divergente",
+  });
+
+  const sameCarga = Math.abs((mdfe.totais.vCarga || 0) - (relatorio.totais.notas || 0)) < 0.01;
+  checks.push({
+    label: "Valor total da carga / notas",
+    ok: sameCarga,
+    left: money(mdfe.totais.vCarga),
+    right: money(relatorio.totais.notas),
+    note: sameCarga ? "Confere" : "Valor divergente",
+  });
+
+  const sameQuantidade = relatorio.totais.quantidade != null && Math.abs((mdfe.totais.qCarga || 0) - (relatorio.totais.quantidade || 0)) < 300;
+  checks.push({
+    label: "Quantidade total",
+    ok: sameQuantidade,
+    left: qty(mdfe.totais.qCarga),
+    right: qty(relatorio.totais.quantidade),
+    note: sameQuantidade
+      ? "Muito próximo"
+      : "Diferença acima do esperado — revisar unidade ou leitura do PDF",
+  });
+
+  const sameQtCte = mdfe.totais.qCTe === relatorio.notas.length;
+  checks.push({
+    label: "Quantidade de CT-e / itens do relatório",
+    ok: sameQtCte,
+    left: String(mdfe.totais.qCTe),
+    right: String(relatorio.notas.length),
+    note: sameQtCte ? "Confere" : "Quantidade divergente",
+  });
+
+  const municipiosMdfe = [...new Set(mdfe.descarregas.map((d) => normalizeText(d.municipio)))];
+  const municipiosRel = [...new Set(relatorio.municipios.map(normalizeText))];
+  const sameMunicipios = municipiosMdfe.every((m) => municipiosRel.includes(m));
+  checks.push({
+    label: "Municípios de descarga",
+    ok: sameMunicipios,
+    left: municipiosMdfe.join(", ") || "-",
+    right: municipiosRel.join(", ") || "-",
+    note: sameMunicipios ? "Confere" : "Há município faltando ou divergente",
+  });
+
+  checks.push({
+    label: "Campo de pagamento no MDF-e (infPag)",
+    ok: mdfe.temInfPag,
+    left: mdfe.temInfPag ? "Presente" : "Ausente",
+    right: "Esperado sobretudo em carga lotação / regras específicas",
+    note: mdfe.temInfPag ? "Informado" : "Ausente — avaliar exigência conforme operação",
+    warnOnly: true,
+  });
+
+  return checks;
+}
+
+function StatusIcon({ ok, warnOnly }) {
+  if (ok) return <CheckCircle2 className="h-4 w-4" />;
+  if (warnOnly) return <AlertTriangle className="h-4 w-4" />;
+  return <XCircle className="h-4 w-4" />;
+}
+
+export default function MdfeRelatorioChecker() {
+  const [xmlFile, setXmlFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
+  const [xmlText, setXmlText] = useState("");
+  const [pdfText, setPdfText] = useState("");
+  const [mdfeData, setMdfeData] = useState(null);
+  const [relatorioData, setRelatorioData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const checks = useMemo(() => compareData(mdfeData, relatorioData), [mdfeData, relatorioData]);
+  const aprovados = checks.filter((c) => c.ok).length;
+  const divergencias = checks.filter((c) => !c.ok && !c.warnOnly).length;
+  const alertas = checks.filter((c) => !c.ok && c.warnOnly).length;
+
+  async function handleAnalyze() {
+    setError("");
+    setLoading(true);
+    try {
+      if (!xmlFile) throw new Error("Anexa o XML do MDF-e.");
+      if (!pdfFile) throw new Error("Anexa o PDF do relatório.");
+
+      const xml = await xmlFile.text();
+      const parsedXml = parseMdfeXml(xml);
+      const extractedPdfText = await extractPdfText(pdfFile);
+      const parsedPdf = parseRelatorioText(extractedPdfText);
+
+      setXmlText(xml);
+      setPdfText(extractedPdfText);
+      setMdfeData(parsedXml);
+      setRelatorioData(parsedPdf);
+    } catch (e) {
+      setError(e.message || "Erro ao analisar os arquivos.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function loadDemo() {
+    const demoPdf = `Relatório para Emissão do Conhecimento de Carga Data Emissão: 20/03/2026 Transportador: Faeli Transportes Ltda Placa Veículo A: MJI-7F79 Placa Carreta: MLP-7222 Engenho Coradini Ltda CNPJ: 89889869000223 Irmaos Cirelli Ltda 148791/1 2.902,50 Faccin Comercio de Alimentos Ltda 148792/1 1.741,50 F. A. Larios & Cia Ltda 148793/1 812,70 F. A. Larios & Cia Ltda 148794/1 696,60 F. A. Larios & Cia Ltda 148795/1 696,60 F. A. Larios & Cia Ltda 148796/1 696,60 F. A. Larios & Cia Ltda 148797/1 696,60 F. A. Larios & Cia Ltda 148798/1 3.250,80 Alipio Schu & Cia Ltda 148799/1 2.074,32 ASSIS CHATEAUBRIAND FORMOSA DO OESTE JESUITAS PALOTINA Quantidade Total: 35.060 Total de Volumes: 1.174 Valor do Frete: 13.568,22 Valor Total das Notas: 131.938,62`;
+
+    const demoXml = `<?xml version="1.0" encoding="UTF-8"?><mdfeProc><MDFe><infMDFe Id="MDFe43260313774384000222580010000038251897856141"><emit><CNPJ>13774384000222</CNPJ><xNome>FAELI TRANSPORTES EIRELI</xNome><xFant>FILIAL RS</xFant><enderEmit><xMun>PELOTAS</xMun><UF>RS</UF></enderEmit></emit><ide><dhEmi>2026-03-20T18:33:00-03:00</dhEmi><UFIni>RS</UFIni><UFFim>PR</UFFim><infPercurso><UFPer>SC</UFPer></infPercurso></ide><infModal><rodo><veicTracao><placa>MJI7F79</placa></veicTracao><veicReboque><placa>MLP7222</placa></veicReboque></rodo></infModal><infDoc><infMunDescarga><xMunDescarga>ASSIS CHATEAUBRIAND</xMunDescarga><infCTe><chCTe>1</chCTe></infCTe><infCTe><chCTe>2</chCTe></infCTe><infCTe><chCTe>3</chCTe></infCTe><infCTe><chCTe>4</chCTe></infCTe></infMunDescarga><infMunDescarga><xMunDescarga>FORMOSA DO OESTE</xMunDescarga><infCTe><chCTe>5</chCTe></infCTe><infCTe><chCTe>6</chCTe></infCTe></infMunDescarga><infMunDescarga><xMunDescarga>JESUITAS</xMunDescarga><infCTe><chCTe>7</chCTe></infCTe><infCTe><chCTe>8</chCTe></infCTe></infMunDescarga><infMunDescarga><xMunDescarga>PALOTINA</xMunDescarga><infCTe><chCTe>9</chCTe></infCTe></infMunDescarga></infDoc><tot><qCTe>9</qCTe><vCarga>131938.62</vCarga><qCarga>35275.3700</qCarga></tot></infMDFe><protMDFe><infProt><cStat>100</cStat><xMotivo>Autorizado o uso do MDF-e</xMotivo></infProt></protMDFe></MDFe></mdfeProc>`;
+
+    setXmlText(demoXml);
+    setPdfText(demoPdf);
+    setMdfeData(parseMdfeXml(demoXml));
+    setRelatorioData(parseRelatorioText(demoPdf));
+    setError("");
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Conferência MDF-e × Relatório</h1>
+            <p className="mt-1 text-sm text-slate-600">
+              Sobe o XML do MDF-e e o PDF do relatório, e a ferramenta compara transportador, placas,
+              totais, municípios e presença de campo de pagamento.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={loadDemo}>Usar exemplo</Button>
+            <Button onClick={handleAnalyze} disabled={loading}>
+              <Search className="mr-2 h-4 w-4" />
+              {loading ? "Analisando..." : "Conferir arquivos"}
+            </Button>
+          </div>
+        </div>
+
+        {error && (
+          <Alert className="border-red-200 bg-red-50 text-red-900">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="rounded-2xl shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Upload className="h-5 w-5" /> XML do MDF-e
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Input type="file" accept=".xml,text/xml" onChange={(e) => setXmlFile(e.target.files?.[0] || null)} />
+              <p className="mt-3 text-xs text-slate-500">Lê placas, emitente, totais, municípios de descarga, CT-es e status do MDF-e.</p>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-2xl shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FileText className="h-5 w-5" /> PDF do relatório
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Input type="file" accept="application/pdf" onChange={(e) => setPdfFile(e.target.files?.[0] || null)} />
+              <p className="mt-3 text-xs text-slate-500">Extrai texto do PDF e compara totais e itens do relatório. Em layouts muito diferentes, pode exigir ajuste fino.</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {checks.length > 0 && (
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="rounded-2xl shadow-sm">
+              <CardContent className="p-5">
+                <div className="text-sm text-slate-500">Conferências aprovadas</div>
+                <div className="mt-2 text-3xl font-bold">{aprovados}</div>
+              </CardContent>
+            </Card>
+            <Card className="rounded-2xl shadow-sm">
+              <CardContent className="p-5">
+                <div className="text-sm text-slate-500">Divergências</div>
+                <div className="mt-2 text-3xl font-bold">{divergencias}</div>
+              </CardContent>
+            </Card>
+            <Card className="rounded-2xl shadow-sm">
+              <CardContent className="p-5">
+                <div className="text-sm text-slate-500">Alertas</div>
+                <div className="mt-2 text-3xl font-bold">{alertas}</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {mdfeData && relatorioData && (
+          <div className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
+            <Card className="rounded-2xl shadow-sm">
+              <CardHeader>
+                <CardTitle>Resultado da conferência</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {checks.map((check) => (
+                  <div key={check.label} className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="font-medium text-slate-900">{check.label}</div>
+                        <div className="mt-1 text-sm text-slate-500">{check.note}</div>
+                      </div>
+                      <Badge variant={check.ok ? "default" : check.warnOnly ? "secondary" : "destructive"} className="flex items-center gap-1">
+                        <StatusIcon ok={check.ok} warnOnly={check.warnOnly} />
+                        {check.ok ? "OK" : check.warnOnly ? "Alerta" : "Divergente"}
+                      </Badge>
+                    </div>
+                    <div className="mt-3 grid gap-2 text-sm md:grid-cols-2">
+                      <div className="rounded-xl bg-slate-50 p-3">
+                        <div className="mb-1 text-xs uppercase tracking-wide text-slate-500">MDF-e</div>
+                        <div>{check.left}</div>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 p-3">
+                        <div className="mb-1 text-xs uppercase tracking-wide text-slate-500">Relatório</div>
+                        <div>{check.right}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <div className="space-y-6">
+              <Card className="rounded-2xl shadow-sm">
+                <CardHeader>
+                  <CardTitle>Resumo do MDF-e</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div><span className="font-medium">Status:</span> {mdfeData.status.codigo} - {mdfeData.status.motivo}</div>
+                  <div><span className="font-medium">Emitente:</span> {mdfeData.emitente.nome}</div>
+                  <div><span className="font-medium">Placas:</span> {mdfeData.veiculos.tracao} / {mdfeData.veiculos.reboque}</div>
+                  <div><span className="font-medium">UF:</span> {mdfeData.viagem.ufIni} → {mdfeData.viagem.ufFim}</div>
+                  <div><span className="font-medium">CT-es:</span> {mdfeData.totais.qCTe}</div>
+                  <div><span className="font-medium">Carga:</span> {money(mdfeData.totais.vCarga)}</div>
+                  <div><span className="font-medium">Quantidade:</span> {qty(mdfeData.totais.qCarga)}</div>
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-2xl shadow-sm">
+                <CardHeader>
+                  <CardTitle>Resumo do relatório</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div><span className="font-medium">Transportador:</span> {relatorioData.transportador || "-"}</div>
+                  <div><span className="font-medium">Embarcador:</span> {relatorioData.embarcador.nome || "-"}</div>
+                  <div><span className="font-medium">Placas:</span> {relatorioData.placas.tracao || "-"} / {relatorioData.placas.reboque || "-"}</div>
+                  <div><span className="font-medium">Frete total:</span> {money(relatorioData.totais.frete)}</div>
+                  <div><span className="font-medium">Valor notas:</span> {money(relatorioData.totais.notas)}</div>
+                  <div><span className="font-medium">Volumes:</span> {qty(relatorioData.totais.volumes)}</div>
+                  <div><span className="font-medium">Quantidade:</span> {qty(relatorioData.totais.quantidade)}</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {(xmlText || pdfText) && (
+          <Card className="rounded-2xl shadow-sm">
+            <CardHeader>
+              <CardTitle>Próximos ajustes recomendados</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-slate-700">
+              <p>1. Adicionar leitura individual dos CT-es para comparar frete por cliente, por nota e por município.</p>
+              <p>2. Criar regra por operação: fracionada, lotação, CIF, FOB, TAC, ETC.</p>
+              <p>3. Gerar parecer final automático: “correto”, “correto com alerta” ou “revisar antes de emitir”.</p>
+              <p>4. Exportar resultado em PDF ou planilha para auditoria interna.</p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}
