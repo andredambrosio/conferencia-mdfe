@@ -3,311 +3,401 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conferência MDF-e | Engenho</title>
+  <title>Conferência MDF-e | Engenho Coradini</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
   <style>
-    :root {
-      --bg: #0b0f14;
-      --card: rgba(255,255,255,0.10);
-      --card-strong: rgba(255,255,255,0.16);
-      --line: rgba(255,255,255,0.14);
-      --text: #f4f7fb;
-      --muted: #c8d2df;
-      --ok: #1fc16b;
-      --warn: #f2b544;
-      --bad: #ff6b6b;
-      --accent: #d8b45a;
-      --shadow: 0 18px 60px rgba(0,0,0,.28);
-      --radius: 28px;
+    :root{
+      --bg:#0b1117;
+      --card:rgba(255,255,255,.10);
+      --card2:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.12);
+      --text:#f3f6fa;
+      --muted:#c7d0db;
+      --green:#0a9552;
+      --gold:#d3b15c;
+      --ok:#1fc16b;
+      --warn:#f0b64a;
+      --bad:#ff6b6b;
+      --shadow:0 18px 60px rgba(0,0,0,.28);
+      --radius:28px;
     }
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
-      color: var(--text);
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+      color:var(--text);
       background:
-        linear-gradient(rgba(7,10,14,.72), rgba(7,10,14,.82)),
-        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat fixed;
+        linear-gradient(rgba(8,12,16,.74), rgba(8,12,16,.84)),
+        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat fixed;
     }
 
-    .wrap {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 28px 18px 60px;
+    .wrap{
+      max-width:1280px;
+      margin:0 auto;
+      padding:24px 16px 50px;
     }
 
-    .hero {
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 18px;
-      align-items: stretch;
+    .glass{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      box-shadow:var(--shadow);
     }
 
-    .glass {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      box-shadow: var(--shadow);
+    .hero{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-bottom:18px;
     }
 
-    .hero-main {
-      padding: 26px;
-      min-height: 260px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    .hero-main{
+      padding:26px;
+      min-height:250px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
     }
 
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      width: fit-content;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+    .eyebrow{
+      display:inline-flex;
+      width:fit-content;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
     }
 
-    h1 {
-      margin: 16px 0 12px;
-      font-size: clamp(28px, 4vw, 56px);
-      line-height: .98;
-      letter-spacing: -.03em;
+    h1{
+      margin:16px 0 10px;
+      font-size:clamp(30px,4vw,56px);
+      line-height:.97;
+      letter-spacing:-.03em;
     }
 
-    .subtitle {
-      max-width: 760px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.55;
+    .subtitle{
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.6;
+      max-width:780px;
     }
 
-    .logo-box {
-      padding: 22px;
-      display: grid;
-      place-items: center;
-      min-height: 260px;
-      text-align: center;
+    .logo-box{
+      min-height:250px;
+      padding:22px;
+      display:grid;
+      place-items:center;
+      text-align:center;
     }
 
-    .logo-mark {
-      width: 112px;
-      height: 112px;
-      border-radius: 28px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(180deg, rgba(216,180,90,.22), rgba(216,180,90,.08));
-      border: 1px solid rgba(216,180,90,.35);
-      font-size: 42px;
-      margin: 0 auto 18px;
+    .logo-shell{
+      width:160px;
+      height:160px;
+      border-radius:36px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      box-shadow:0 14px 40px rgba(0,0,0,.18);
     }
 
-    .panel-grid {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 18px;
+    .logo-shell img{
+      width:88%;
+      height:88%;
+      object-fit:contain;
+      display:block;
     }
 
-    .panel { padding: 22px; }
-    .panel h2 {
-      margin: 0 0 8px;
-      font-size: 22px;
-      letter-spacing: -.02em;
-    }
-    .panel p { color: var(--muted); line-height: 1.55; }
-
-    .dropzone {
-      margin-top: 14px;
-      border: 1.5px dashed rgba(255,255,255,.22);
-      border-radius: 26px;
-      padding: 18px;
-      transition: .2s ease;
-      background: rgba(255,255,255,.05);
+    .logo-fallback{
+      font-size:64px;
+      color:var(--gold);
+      display:none;
     }
 
-    .dropzone.drag {
-      border-color: rgba(216,180,90,.65);
-      background: rgba(216,180,90,.10);
-      transform: translateY(-1px);
+    .brand-name{
+      margin-top:16px;
+      font-size:30px;
+      font-weight:800;
+      letter-spacing:-.03em;
     }
 
-    .drop-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .grid{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:18px;
     }
 
-    .drop-card {
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 24px;
-      padding: 18px;
-      background: rgba(255,255,255,.05);
+    .panel{
+      padding:22px;
     }
 
-    .drop-title { font-weight: 700; margin-bottom: 6px; }
-    .drop-meta { color: var(--muted); font-size: 13px; }
-    .file-name {
-      margin-top: 12px;
-      font-size: 13px;
-      color: var(--accent);
-      word-break: break-word;
+    .panel h2{
+      margin:0 0 8px;
+      font-size:22px;
+      letter-spacing:-.02em;
     }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 16px;
+    .panel p{
+      color:var(--muted);
+      line-height:1.6;
     }
 
-    button, .file-btn {
-      appearance: none;
-      border: 0;
-      border-radius: 999px;
-      padding: 14px 18px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 14px;
-      transition: .18s ease;
+    .dropzone{
+      margin-top:14px;
+      border:1.5px dashed rgba(255,255,255,.22);
+      border-radius:26px;
+      padding:16px;
+      background:rgba(255,255,255,.05);
+      transition:.2s ease;
     }
 
-    .primary {
-      background: linear-gradient(180deg, #e0bf70, #c9a24a);
-      color: #1d1608;
+    .dropzone.drag{
+      border-color:rgba(211,177,92,.72);
+      background:rgba(211,177,92,.10);
+      transform:translateY(-1px);
     }
 
-    .ghost {
-      background: rgba(255,255,255,.08);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,.12);
+    .drop-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
     }
 
-    button:hover, .file-btn:hover { transform: translateY(-1px); }
-    input[type="file"] { display: none; }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 14px;
-      margin-top: 16px;
+    .drop-card{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      padding:18px;
+      background:rgba(255,255,255,.05);
+      min-height:180px;
     }
 
-    .stat {
-      padding: 18px;
-      border-radius: 24px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
+    .drop-title{
+      font-weight:800;
+      margin-bottom:6px;
+      font-size:16px;
     }
 
-    .stat-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
-    .stat-value { margin-top: 8px; font-size: 28px; font-weight: 800; letter-spacing: -.04em; }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
+    .drop-meta{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      min-height:58px;
     }
 
-    .ok { background: rgba(31,193,107,.14); color: #92ffc0; border: 1px solid rgba(31,193,107,.28); }
-    .warn { background: rgba(242,181,68,.14); color: #ffdca0; border: 1px solid rgba(242,181,68,.28); }
-    .bad { background: rgba(255,107,107,.14); color: #ffb4b4; border: 1px solid rgba(255,107,107,.28); }
-
-    .result-grid {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 18px;
+    .file-btn, button{
+      appearance:none;
+      border:0;
+      border-radius:999px;
+      padding:14px 18px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.18s ease;
+      font-size:14px;
     }
 
-    .list { display: grid; gap: 12px; margin-top: 14px; }
-
-    .check {
-      border-radius: 24px;
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 16px;
-      background: rgba(255,255,255,.05);
+    button:hover, .file-btn:hover{
+      transform:translateY(-1px);
     }
 
-    .check-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
+    .primary{
+      background:linear-gradient(180deg,#e0c274,#c9a24a);
+      color:#1f1708;
     }
 
-    .check h3 {
-      margin: 0;
-      font-size: 16px;
+    .ghost{
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.12);
+      display:inline-block;
+      text-decoration:none;
+      margin-top:14px;
     }
 
-    .check p {
-      margin: 6px 0 0;
-      font-size: 14px;
-      color: var(--muted);
+    .file-name{
+      margin-top:12px;
+      color:var(--gold);
+      font-size:13px;
+      word-break:break-word;
     }
 
-    .pair {
-      margin-top: 12px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+    input[type=file]{
+      display:none;
     }
 
-    .pair-box {
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.08);
-      padding: 12px;
-      border-radius: 18px;
-      min-height: 84px;
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:16px;
     }
 
-    .pair-label {
-      color: var(--muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      margin-bottom: 6px;
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-top:18px;
     }
 
-    .error-box {
-      margin-top: 14px;
-      border-radius: 24px;
-      padding: 18px;
-      background: rgba(255,107,107,.08);
-      border: 1px solid rgba(255,107,107,.18);
+    .stat{
+      padding:18px;
+      border-radius:22px;
+      background:var(--card2);
+      border:1px solid rgba(255,255,255,.10);
     }
 
-    .error-item {
-      padding: 14px 0;
-      border-top: 1px solid rgba(255,255,255,.08);
-    }
-    .error-item:first-child { border-top: 0; padding-top: 0; }
-
-    .muted { color: var(--muted); }
-    .small { font-size: 13px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-
-    @media (max-width: 1024px) {
-      .hero, .panel-grid, .result-grid { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: repeat(2,1fr); }
+    .stat-label{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
     }
 
-    @media (max-width: 640px) {
-      .drop-row, .pair, .stats { grid-template-columns: 1fr; }
-      .wrap { padding: 14px 12px 42px; }
-      .hero-main, .panel, .logo-box { padding: 18px; }
+    .stat-value{
+      margin-top:8px;
+      font-size:30px;
+      font-weight:900;
+      letter-spacing:-.04em;
+    }
+
+    .result-grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .list{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .check{
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.10);
+      padding:16px;
+      background:rgba(255,255,255,.05);
+    }
+
+    .check-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .check h3{
+      margin:0;
+      font-size:16px;
+    }
+
+    .check p{
+      margin:6px 0 0;
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .pair{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .pair-box{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:12px;
+      min-height:82px;
+    }
+
+    .pair-label{
+      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:6px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .ok{
+      background:rgba(31,193,107,.14);
+      color:#9dffca;
+      border:1px solid rgba(31,193,107,.28);
+    }
+
+    .warn{
+      background:rgba(240,182,74,.14);
+      color:#ffe0a2;
+      border:1px solid rgba(240,182,74,.28);
+    }
+
+    .bad{
+      background:rgba(255,107,107,.14);
+      color:#ffc0c0;
+      border:1px solid rgba(255,107,107,.28);
+    }
+
+    .error-box{
+      margin-top:14px;
+      border-radius:22px;
+      padding:18px;
+      background:rgba(255,107,107,.08);
+      border:1px solid rgba(255,107,107,.18);
+    }
+
+    .error-item{
+      padding:14px 0;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+
+    .error-item:first-child{
+      border-top:0;
+      padding-top:0;
+    }
+
+    .muted{color:var(--muted)}
+    .small{font-size:13px}
+
+    @media (max-width:1024px){
+      .hero, .grid, .result-grid{
+        grid-template-columns:1fr;
+      }
+      .stats{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media (max-width:640px){
+      .drop-row, .pair, .stats{
+        grid-template-columns:1fr;
+      }
+      .wrap{
+        padding:14px 12px 34px;
+      }
+      .hero-main, .logo-box, .panel{
+        padding:18px;
+      }
     }
   </style>
 </head>
@@ -315,52 +405,49 @@
   <div class="wrap">
     <section class="hero">
       <div class="hero-main glass">
-        <div>
-          <div class="eyebrow">Conferência inteligente · MDF-e + Relatório</div>
-          <h1>Revisão automática de frete com visual limpo, leve e direto.</h1>
-          <p class="subtitle">
-            Arraste o XML do MDF-e e o relatório. O sistema compara os dados principais,
-            identifica lotação ou fracionado, aponta divergências visíveis e separa exatamente o que está errado e o que deve ser ajustado.
-          </p>
-        </div>
-        <div class="actions">
-          <span class="badge warn">Base legal configurável</span>
-          <span class="badge ok">Sem backend por enquanto</span>
-          <span class="badge warn">Pronto para GitHub Pages</span>
+        <div class="eyebrow">Conferência automática · MDF-e + Relatório</div>
+        <h1>Validação rápida, visual limpa e erro apontado no lugar certo.</h1>
+        <div class="subtitle">
+          Arrasta o XML do MDF-e e o PDF do relatório. O sistema compara dados principais,
+          identifica indícios de lotação ou fracionado e mostra exatamente o que revisar antes de liberar a carga.
         </div>
       </div>
+
       <div class="logo-box glass">
         <div>
-          <div style="width:140px;height:140px;border-radius:32px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);margin:0 auto 18px;overflow:hidden;">
-            <img src="logo.png" alt="Engenho Coradini" style="width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 10px 28px rgba(0,0,0,.20));" />
+          <div class="logo-shell">
+            <img id="brandLogo" src="logo.png" alt="Engenho Coradini">
+            <div id="logoFallback" class="logo-fallback">🌾</div>
           </div>
-          <h2 style="margin:0 0 6px; font-size: 28px; letter-spacing:-.03em;">Engenho Coradini Ltda</h2>
-          <p class="muted" style="max-width:320px; margin:0 auto;">
-            Conferência leve, visual premium e operação direta: arrastar, analisar e apontar exatamente o que precisa ser corrigido.
-          </p>
+          <div class="brand-name">Engenho Coradini Ltda</div>
         </div>
       </div>
     </section>
 
-    <section class="panel-grid">
+    <section class="grid">
       <div class="panel glass">
         <h2>Arquivos</h2>
-        <p>Arrasta e solta aqui ou usa os botões. A análise roda no navegador para ficar leve. Os arquivos não são enviados nem salvos.</p>
+        <p>Os arquivos são lidos só no navegador. Nada é salvo.</p>
 
         <div id="dropzone" class="dropzone">
           <div class="drop-row">
             <div class="drop-card">
               <div class="drop-title">XML do MDF-e</div>
-              <div class="drop-meta">Manifesto autorizado para conferência estrutural, operação, placas, municípios, indícios de pagamento e presença de CIOT.</div>
+              <div class="drop-meta">
+                Arraste o XML para qualquer lugar desta área ou selecione manualmente.
+              </div>
               <label class="file-btn ghost" for="xmlInput">Selecionar XML</label>
-              <input id="xmlInput" type="file" accept=".xml,text/xml" />
+              <input id="xmlInput" type="file" accept=".xml,text/xml">
               <div id="xmlName" class="file-name">Nenhum arquivo selecionado</div>
             </div>
+
             <div class="drop-card">
-              <div class="drop-title">Relatório PDF</div>
-              <div class="drop-meta">Relatório operacional do sistema para cruzar transportador, placas, totais, notas e frete. Nada é salvo: os arquivos são lidos só no navegador.</div>
+              <div class="drop-title">PDF do relatório</div>
+              <div class="drop-meta">
+                Arraste o PDF para esta área ou selecione manualmente.
+              </div>
               <label class="file-btn ghost" for="pdfInput">Selecionar PDF</label>
-              <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
+              <input id="pdfInput" type="file" accept="application/pdf,.pdf">
               <div id="pdfName" class="file-name">Nenhum arquivo selecionado</div>
             </div>
           </div>
@@ -392,21 +479,20 @@
       </div>
 
       <div class="panel glass">
-        <h2>Lógica da análise</h2>
+        <h2>Leitura aplicada</h2>
         <p>
-          Esta versão separa o parecer em quatro blocos: estrutura do MDF-e, coerência com o relatório, classificação da operação e risco regulatório.
+          A análise cruza dados estruturais do MDF-e com o relatório operacional e devolve
+          erro, alerta e ajuste sugerido.
         </p>
         <div class="list small muted">
-          <div>1. Lê o XML e verifica autorização, placas, emitente, totais, municípios e presença de grupo de pagamento.</div>
-          <div>2. Lê o PDF e extrai dados do relatório: transportador, placas, valor do frete, valor das notas, quantidade total e notas listadas.</div>
-          <div>3. Decide se a operação parece fracionada ou lotação pelos CT-e vinculados e pela distribuição de municípios/clientes.</div>
-          <div>4. Mostra erro exato e ajuste sugerido, no formato operacional.</div>
-        </div>
-        <div class="error-box" style="margin-top:18px; background:rgba(242,181,68,.08); border-color:rgba(242,181,68,.18)">
-          <strong>Importante:</strong>
-          <div class="muted small" style="margin-top:8px; line-height:1.6;">
-            A regra de piso mínimo precisa ficar versionada. O sistema deve permitir atualizar a tabela vigente da ANTT e as regras de bloqueio/fiscalização conforme mudanças regulatórias.
-          </div>
+          <div>1. Autorização do MDF-e</div>
+          <div>2. Emitente / transportador</div>
+          <div>3. Placas</div>
+          <div>4. Valor da carga x valor total das notas</div>
+          <div>5. Quantidade de CT-e x itens do relatório</div>
+          <div>6. Municípios de descarga</div>
+          <div>7. Grupo de pagamento</div>
+          <div>8. CIOT encontrado ou não</div>
         </div>
       </div>
     </section>
@@ -429,21 +515,19 @@
     </section>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js';
 
     const state = {
       xmlFile: null,
       pdfFile: null,
-      xmlRaw: '',
       mdfe: null,
-      relatorio: null,
+      relatorio: null
     };
 
     const $ = (id) => document.getElementById(id);
 
-    function normalizeText(value) {
+    function normalizeText(value){
       return String(value || '')
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -452,61 +536,60 @@
         .toUpperCase();
     }
 
-    function normalizePlate(value) {
+    function normalizePlate(value){
       return String(value || '').replace(/[^A-Z0-9]/gi, '').toUpperCase();
     }
 
-    function parseBRNumber(value) {
+    function parseBRNumber(value){
       if (value == null) return null;
-      const s = String(value).replace(/\./g, '').replace(',', '.').replace(/[^
-\d.-]/g, '');
+      const s = String(value)
+        .replace(/\./g, '')
+        .replace(',', '.')
+        .replace(/[^\d.-]/g, '');
       const n = Number(s);
       return Number.isFinite(n) ? n : null;
     }
 
-    function formatMoney(value) {
+    function formatMoney(value){
       if (value == null || Number.isNaN(value)) return 'não encontrado';
-      return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      return value.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
     }
 
-    function formatQty(value) {
-      if (value == null || Number.isNaN(value)) return 'não encontrado';
-      return value.toLocaleString('pt-BR', { maximumFractionDigits: 4 });
-    }
-
-    function setFileName(kind, name) {
+    function setFileName(kind, name){
       $(kind === 'xml' ? 'xmlName' : 'pdfName').textContent = name || 'Nenhum arquivo selecionado';
     }
 
-    async function readPdfText(file) {
+    async function readPdfText(file){
       const buffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
       let text = '';
-      for (let i = 1; i <= pdf.numPages; i++) {
+      for(let i = 1; i <= pdf.numPages; i++){
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
-        text += '\n' + content.items.map((item) => item.str).join(' ');
+        text += '\n' + content.items.map(item => item.str).join(' ');
       }
       return text;
     }
 
-    function getTagText(parent, tag) {
+    function getTagText(parent, tag){
       const el = parent.getElementsByTagName(tag)[0];
       return el ? el.textContent.trim() : '';
     }
 
-    function parseMdfe(xmlText) {
+    function parseMdfe(xmlText){
       const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-      if (doc.getElementsByTagName('parsererror')[0]) throw new Error('XML inválido.');
+      if (doc.getElementsByTagName('parsererror')[0]) {
+        throw new Error('XML inválido.');
+      }
 
       const municipalities = Array.from(doc.getElementsByTagName('infMunDescarga')).map((node) => ({
         municipio: getTagText(node, 'xMunDescarga'),
-        ctes: Array.from(node.getElementsByTagName('chCTe')).map((n) => n.textContent.trim()).filter(Boolean),
+        ctes: Array.from(node.getElementsByTagName('chCTe')).map((n) => n.textContent.trim()).filter(Boolean)
       }));
 
       const plates = Array.from(doc.getElementsByTagName('placa')).map((n) => n.textContent.trim());
-
       const ciotNodes = Array.from(doc.getElementsByTagName('CIOT')).map((n) => n.textContent.trim()).filter(Boolean);
+
       return {
         chave: doc.getElementsByTagName('infMDFe')[0]?.getAttribute('Id')?.replace(/^MDFe/, '') || '',
         status: getTagText(doc, 'cStat'),
@@ -524,11 +607,11 @@
         municipios: municipalities,
         temInfPag: doc.getElementsByTagName('infPag').length > 0,
         temCIOT: ciotNodes.length > 0,
-        ciots: ciotNodes,
+        ciots: ciotNodes
       };
     }
 
-    function parseRelatorio(text) {
+    function parseRelatorio(text){
       const raw = String(text || '');
       const normalized = normalizeText(raw);
 
@@ -537,8 +620,6 @@
       const placaReboque = raw.match(/Placa Carreta[:\s]*([A-Z]{3}[- ]?[0-9]{4})/i)?.[1] || '';
       const totalFrete = parseBRNumber(raw.match(/Valor do Frete[.\s:]*([\d.]+,\d+)/i)?.[1]);
       const totalNotas = parseBRNumber(raw.match(/Valor Total das Notas[.\s:]*([\d.]+,\d+)/i)?.[1]);
-      const totalVolumes = parseBRNumber(raw.match(/Total de Volumes[.\s:]*([\d.]+(?:,\d+)?)/i)?.[1]);
-      const quantidadeTotal = parseBRNumber(raw.match(/Quantidade Total[.\s:]*([\d.]+(?:,\d+)?)/i)?.[1]);
 
       const notaRegex = /(\d{6}\/\d)\s+([\d.]+,\d{2})/g;
       const notas = [];
@@ -556,39 +637,36 @@
         placaReboque,
         totalFrete,
         totalNotas,
-        totalVolumes,
-        quantidadeTotal,
         notas,
-        municipios,
-        trecho: raw.slice(0, 1800),
+        municipios
       };
     }
 
-    function inferirTipoOperacao(mdfe, relatorio) {
-      const totalMunicipios = mdfe.municipios.length;
-      const totalCTe = mdfe.qCTe;
-      const totalItensRel = relatorio.notas.length;
-
-      if (totalCTe > 1 || totalMunicipios > 1 || totalItensRel > 1) {
+    function inferirTipoOperacao(mdfe, relatorio){
+      if (mdfe.qCTe > 1 || mdfe.municipios.length > 1 || relatorio.notas.length > 1) {
         return {
           tipo: 'Provável fracionada',
-          motivo: 'Há múltiplos CT-e, múltiplos municípios de descarga ou múltiplos itens no relatório.'
+          motivo: 'Há múltiplos CT-e, municípios ou itens no relatório.'
         };
       }
 
       return {
         tipo: 'Provável lotação',
-        motivo: 'Há indício de operação única, com um único fluxo principal.'
+        motivo: 'Há indício de operação única.'
       };
     }
 
-    function addCheck(list, status, title, note, left, right, fix) {
+    function addCheck(list, status, title, note, left, right, fix){
       list.push({ status, title, note, left, right, fix });
     }
 
-    function buildChecks(mdfe, relatorio) {
+    function buildChecks(mdfe, relatorio){
       const checks = [];
-      const emitenteMatch = normalizeText(mdfe.emitente).includes(normalizeText(relatorio.transportador)) || normalizeText(relatorio.transportador).includes(normalizeText(mdfe.emitente));
+
+      const emitenteMatch =
+        normalizeText(mdfe.emitente).includes(normalizeText(relatorio.transportador)) ||
+        normalizeText(relatorio.transportador).includes(normalizeText(mdfe.emitente));
+
       addCheck(
         checks,
         emitenteMatch ? 'ok' : 'bad',
@@ -637,10 +715,10 @@
         checks,
         qtdItensMatch ? 'ok' : 'warn',
         'Quantidade de CT-e x linhas do relatório',
-        qtdItensMatch ? 'Quantidade compatível.' : 'A contagem não bate exatamente; pode ser diferença de layout ou item faltando.',
+        qtdItensMatch ? 'Quantidade compatível.' : 'A contagem não bate exatamente.',
         String(mdfe.qCTe || 0),
         String(relatorio.notas.length || 0),
-        'Conferir se todas as linhas do relatório estão presentes e se o XML foi o manifesto correto.'
+        'Conferir se todas as linhas do relatório estão presentes e se o XML é o manifesto correto.'
       );
 
       const municipiosMdfe = [...new Set(mdfe.municipios.map((m) => normalizeText(m.municipio)))];
@@ -653,7 +731,7 @@
         municipiosOk ? 'Municípios coerentes entre XML e relatório.' : 'Há município do MDF-e que não apareceu claramente no relatório.',
         municipiosMdfe.join(', ') || 'não encontrado',
         municipiosRel.join(', ') || 'não encontrado',
-        'Revisar o relatório e os CT-e vinculados por município de descarga.'
+        'Revisar municípios vinculados no MDF-e e no relatório.'
       );
 
       const operacao = inferirTipoOperacao(mdfe, relatorio);
@@ -665,8 +743,8 @@
         operacao.tipo,
         operacao.tipo,
         operacao.tipo === 'Provável lotação'
-          ? 'Se lotação, revisar obrigatoriedade de grupo de pagamento e aderência ao piso mínimo vigente.'
-          : 'Se fracionada, manter coerência dos documentos e conferir tratamento do frete por operação.'
+          ? 'Se lotação, revisar grupo de pagamento e aderência à regra aplicável.'
+          : 'Se fracionada, manter coerência documental.'
       );
 
       if (operacao.tipo === 'Provável lotação' && !mdfe.temInfPag) {
@@ -677,17 +755,17 @@
           'Operação com indício de lotação sem infPag no XML.',
           'Ausente',
           'Esperado',
-          'No sistema emissor do MDF-e, preencher o grupo de pagamento do frete antes da autorização, quando aplicável à operação.'
+          'No sistema emissor do MDF-e, preencher o grupo de pagamento antes da autorização, quando aplicável.'
         );
       } else if (!mdfe.temInfPag) {
         addCheck(
           checks,
           'warn',
           'Grupo de pagamento no MDF-e',
-          'infPag não encontrado. Em operação fracionada isso pode não invalidar o fluxo, mas merece revisão conforme regra interna.',
+          'infPag não encontrado. Em operação fracionada isso pode exigir apenas revisão interna.',
           'Ausente',
           'Avaliar caso',
-          'Padronizar uma regra interna: exigir, dispensar ou sinalizar para revisão humana conforme tipo da operação.'
+          'Definir regra interna de revisão para ausência de infPag.'
         );
       } else {
         addCheck(
@@ -704,22 +782,24 @@
       addCheck(
         checks,
         mdfe.temCIOT ? 'ok' : 'warn',
-        'CIOT no XML',
-        mdfe.temCIOT ? 'CIOT identificado no arquivo.' : 'CIOT não encontrado no XML. Isso pode ser aceitável ou não, conforme o tipo de contratação e a operação.',
+        'CIOT',
+        mdfe.temCIOT ? 'CIOT encontrado no XML.' : 'CIOT não encontrado no XML.',
         mdfe.temCIOT ? mdfe.ciots.join(', ') : 'Ausente',
         mdfe.temCIOT ? 'Encontrado' : 'Avaliar necessidade',
-        'Se a operação exigir CIOT, preencher ou revisar esse dado no sistema emissor antes de liberar.'
+        'Se a operação exigir CIOT, revisar e preencher no sistema emissor antes de liberar.'
       );
 
       return checks;
     }
 
-    function renderChecks(checks) {
+    function renderChecks(checks){
       const root = $('checks');
       root.innerHTML = '';
+
       checks.forEach((check) => {
         const badgeClass = check.status === 'ok' ? 'ok' : check.status === 'warn' ? 'warn' : 'bad';
         const badgeText = check.status === 'ok' ? 'OK' : check.status === 'warn' ? 'ALERTA' : 'ERRO';
+
         const el = document.createElement('div');
         el.className = 'check';
         el.innerHTML = `
@@ -745,13 +825,15 @@
       });
     }
 
-    function renderErrors(checks) {
+    function renderErrors(checks){
       const errors = checks.filter((c) => c.status !== 'ok');
       const root = $('errorsArea');
-      if (!errors.length) {
+
+      if (!errors.length){
         root.innerHTML = '<strong>Tudo certo.</strong><div class="muted small" style="margin-top:8px;">Nenhum erro crítico encontrado nesta leitura.</div>';
         return;
       }
+
       root.innerHTML = errors.map((e, i) => `
         <div class="error-item">
           <div><strong>${i + 1}. ${e.title}</strong></div>
@@ -761,7 +843,7 @@
       `).join('');
     }
 
-    function renderSummary(mdfe, relatorio, checks) {
+    function renderSummary(mdfe, relatorio, checks){
       const summary = $('summary');
       const operacao = inferirTipoOperacao(mdfe, relatorio);
       const ok = checks.filter((c) => c.status === 'ok').length;
@@ -782,7 +864,7 @@
         ['Valor notas relatório', formatMoney(relatorio.totalNotas)],
         ['Carga MDF-e', formatMoney(mdfe.vCarga)],
         ['Quantidade CT-e', String(mdfe.qCTe || 0)],
-        ['CIOT', mdfe.temCIOT ? mdfe.ciots.join(', ') : 'Não encontrado'],
+        ['CIOT', mdfe.temCIOT ? mdfe.ciots.join(', ') : 'Não encontrado']
       ];
 
       summary.innerHTML = cards.map(([a,b]) => `
@@ -793,23 +875,27 @@
       `).join('');
     }
 
-    async function runAnalysis() {
-      if (!state.xmlFile || !state.pdfFile) {
+    async function runAnalysis(){
+      if (!state.xmlFile || !state.pdfFile){
         alert('Anexa o XML e o PDF.');
         return;
       }
-      try {
+
+      try{
         $('analisarBtn').textContent = 'Analisando...';
+
         const xmlText = await state.xmlFile.text();
-        state.xmlRaw = xmlText;
         const pdfText = await readPdfText(state.pdfFile);
+
         state.mdfe = parseMdfe(xmlText);
         state.relatorio = parseRelatorio(pdfText);
+
         const checks = buildChecks(state.mdfe, state.relatorio);
+
         renderChecks(checks);
         renderErrors(checks);
         renderSummary(state.mdfe, state.relatorio, checks);
-      } catch (err) {
+      } catch(err){
         $('checks').innerHTML = '';
         $('summary').innerHTML = '';
         $('errorsArea').innerHTML = `<strong>Erro na análise.</strong><div class="muted small" style="margin-top:8px;">${err.message}</div>`;
@@ -818,7 +904,7 @@
       }
     }
 
-    function resetAll() {
+    function resetAll(){
       state.xmlFile = null;
       state.pdfFile = null;
       state.mdfe = null;
@@ -850,20 +936,23 @@
     $('limparBtn').addEventListener('click', resetAll);
 
     const dropzone = $('dropzone');
-    ['dragenter', 'dragover'].forEach((evt) => {
+
+    ['dragenter','dragover'].forEach((evt) => {
       dropzone.addEventListener(evt, (e) => {
         e.preventDefault();
         e.stopPropagation();
         dropzone.classList.add('drag');
       });
     });
-    ['dragleave', 'drop'].forEach((evt) => {
+
+    ['dragleave','drop'].forEach((evt) => {
       dropzone.addEventListener(evt, (e) => {
         e.preventDefault();
         e.stopPropagation();
         dropzone.classList.remove('drag');
       });
     });
+
     dropzone.addEventListener('drop', (e) => {
       const files = Array.from(e.dataTransfer.files || []);
       files.forEach((file) => {
@@ -876,6 +965,14 @@
           setFileName('pdf', file.name);
         }
       });
+    });
+
+    const brandLogo = $('brandLogo');
+    const logoFallback = $('logoFallback');
+
+    brandLogo.addEventListener('error', () => {
+      brandLogo.style.display = 'none';
+      logoFallback.style.display = 'block';
     });
   </script>
 </body>
